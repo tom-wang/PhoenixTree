@@ -1,0 +1,13 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/example/example",
+        "pages/chat/chat"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#333",
+        "navigationBarTitleText": "梧桐树下Plus",
+        "navigationBarTextStyle": "white"
+    }
+}

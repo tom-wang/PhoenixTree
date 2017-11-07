@@ -1,0 +1,27 @@
+.root {
+  border: 1px solid #333;
+  display: flex;
+  justify-content: center;
+}
+.music {
+  width: 100%;
+  border: 1px solid #333;
+  margin-top: 5px;
+}
+.audio {
+  width:100%;
+}
+.footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  margin-bottom: 5px;
+}
+.footerinner {
+  display: flex;
+  justify-content: center;
+}
+.image {
+  width: 48px;
+  height: 48px;
+}
