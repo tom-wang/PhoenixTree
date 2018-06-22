@@ -5,6 +5,8 @@
 // 引入 QCloud 小程序增强 SDK
 var qcloud = require('../../vendor/wafer2-client-sdk/index');
 
+var hi = require('../components/hi');
+
 // 引入配置
 var config = require('../../config');
 
@@ -38,8 +40,13 @@ var showModel = (title, content) => {
 Page({
     onLoad() {
         console.log('onload');
+        var page = this;
         qcloud.login({
             success(userInfo) {
+                page.setData({
+                    'avatarUrl': userInfo.avatarUrl,
+                    'nickName': userInfo.nickName
+                });
                 console.log(userInfo);
             },
             fail(err) {

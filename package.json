@@ -1,0 +1,19 @@
+{
+  "name": "phoenixtree",
+  "version": "1.0.0",
+  "description": "Wafer 2.0 客户端和服务端集合 Demo 仓库。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tom-wang/PhoenixTree.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tom-wang/PhoenixTree/issues"
+  },
+  "homepage": "https://github.com/tom-wang/PhoenixTree#readme"
+}
