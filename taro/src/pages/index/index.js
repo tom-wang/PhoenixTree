@@ -5,8 +5,9 @@ import './index.scss'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ counter, session }) => ({
+  counter,
+  session
 }), (dispatch) => ({
   add () {
     dispatch(add())
@@ -24,6 +25,7 @@ export default class Index extends Component {
   }
 
   render () {
+    console.log(',,,,,,', this.props.session);
     return (
       <View className='todo'>
         <Button className='add_btn' onClick={this.props.add}>+</Button>
