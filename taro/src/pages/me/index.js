@@ -34,23 +34,12 @@ export default class Index extends Component {
     this.props.setUserInfo(e.detail.userInfo)
   }
 
-  onClick() {
-    //跳转页面，但是不能跳转到tabBar页面
-    //跳转tabBar页面，使用switchTab
-    console.log('lalalal')
-    //Taro.navigateTo({url: '/pages/me/index'})
-    Taro.switchTab({
-      url: '/pages/me/index'
-    })
-  }
-
   render () {
     const { userInfo } = this.props.session;
     return -1 === userInfo ? <View>
       <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
     </View> : <View>
       <Avatar count="7" src={userInfo.avatarUrl} />
-      <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
     </View>;
     /*return (
       <View className='todo'>

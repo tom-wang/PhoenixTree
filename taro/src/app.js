@@ -11,8 +11,21 @@ const store = configStore()
 class App extends Component {
   config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/me/index'
     ],
+    tabBar: {
+      list: [
+        {
+          pagePath: 'pages/index/index',
+          text: '通讯录'
+        },
+        {
+          pagePath: 'pages/me/index',
+          text: '我'
+        }
+      ]
+    },
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
@@ -21,12 +34,14 @@ class App extends Component {
     }
   }
 
+  //会编译成onLaunch
   componentWillMount() {
     this.login().then(() => {
       wx.cloud.init();
       this.getCurrentUserInfo();
       this.getUserInfoList();
     }).catch(() => {
+      console.log(arguments);
       console.log('catch');
     });
   }
