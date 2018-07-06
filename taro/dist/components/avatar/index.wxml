@@ -1,0 +1,9 @@
+<template name="Avatar">
+    <block>
+        <view class="avatar" bindtap="Avatar__onClick" data-component-path="{{$path}}"
+        data-component-class="Avatar" data-event-onClick-scope="this">
+            <view class="{{anonymousState__temp}}" style="{{anonymousState__temp2}}"
+            wx:if="{{src}}"></view>
+        </view>
+    </block>
+</template>

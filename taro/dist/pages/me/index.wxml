@@ -1,0 +1,16 @@
+<import src="../../components/avatar/index.wxml" />
+<block>
+    <block>
+        <block wx:if="{{-1 === userInfo}}">
+            <view>
+                <button open-type="getUserInfo" size="mini" bindgetuserinfo="onGetUserInfo"
+                data-event-onGetUserInfo-scope="this" data-component-path="{{$path}}">进入新世界</button>
+            </view>
+        </block>
+        <block wx:else>
+            <view>
+                <template is="Avatar" data="{{...$$Avatar}}"></template>
+            </view>
+        </block>
+    </block>
+</block>
