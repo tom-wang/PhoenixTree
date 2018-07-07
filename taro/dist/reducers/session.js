@@ -12,7 +12,12 @@ var _session = require("../constants/session.js");
 
 var INITIAL_STATE = {
   code: '',
-  userInfo: null //-1表示getUserInfo返回错误，需要展示授权按钮
+  userInfo: {
+    loading: true
+  }, //-1表示getUserInfo返回错误，需要展示授权按钮
+  regInfo: {
+    loading: true
+  }
 };
 
 function session() {
@@ -27,6 +32,10 @@ function session() {
     case _session.SET_USERINFO:
       return _extends({}, state, {
         userInfo: action.payload
+      });
+    case _session.SET_REGINFO:
+      return _extends({}, state, {
+        regInfo: action.payload
       });
     default:
       return state;

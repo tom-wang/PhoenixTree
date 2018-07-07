@@ -1245,9 +1245,9 @@ function set(object, path, value) {
   return object == null ? object : baseSet(object, path, value);
 }
 
-function dynamicRecursive(component, param, data, stateName) {
+function dynamicRecursive(component, param, data, uid) {
   data = data || [];
-  return param.map(function (paramItem) {
+  return param.map(function (paramItem, idx) {
     var inData = paramItem.subscript ? data[paramItem.subscript] || [] : data;
     var res = {
       name: paramItem.name || '',
@@ -1259,23 +1259,23 @@ function dynamicRecursive(component, param, data, stateName) {
     if (res.name) {
       res.components = inData.map(function (d, index) {
         var res = {
-          fn: "dy_".concat(stateName, "_").concat(paramItem.subscript, "_").concat(paramItem.name).concat(index),
+          fn: "dy_".concat(uid, "_").concat(paramItem.subscript, "_").concat(paramItem.name).concat(index, "_").concat(idx),
           body: function (d) {
             return Object.assign({
-              $name: "dy_".concat(stateName, "_").concat(paramItem.subscript, "_").concat(paramItem.name).concat(index)
+              $name: "dy_".concat(uid, "_").concat(paramItem.subscript, "_").concat(paramItem.name).concat(index)
             }, paramItem.args && paramItem.args.call(component, d, index));
           }(d)
         };
 
         if (paramItem.children && paramItem.children.length) {
-          res.children = dynamicRecursive(component, paramItem.children, d, stateName);
+          res.children = dynamicRecursive(component, paramItem.children, d, uid);
         }
 
         return res;
       });
     } else if (paramItem.children && paramItem.children.length) {
       res.children = inData.map(function (d, index) {
-        return dynamicRecursive(component, paramItem.children, d, stateName);
+        return dynamicRecursive(component, paramItem.children, d, uid);
       });
     }
 
@@ -1413,6 +1413,205 @@ function () {
 Events.eventSplitter = /\s+/;
 
 function render() {}
+
+var onAndSyncApis = {
+  onSocketOpen: true,
+  onSocketError: true,
+  onSocketMessage: true,
+  onSocketClose: true,
+  onBackgroundAudioPlay: true,
+  onBackgroundAudioPause: true,
+  onBackgroundAudioStop: true,
+  onNetworkStatusChange: true,
+  onAccelerometerChange: true,
+  onCompassChange: true,
+  onBluetoothAdapterStateChange: true,
+  onBluetoothDeviceFound: true,
+  onBLEConnectionStateChange: true,
+  onBLECharacteristicValueChange: true,
+  onBeaconUpdate: true,
+  onBeaconServiceChange: true,
+  onUserCaptureScreen: true,
+  onHCEMessage: true,
+  onGetWifiList: true,
+  onWifiConnected: true,
+  setStorageSync: true,
+  getStorageSync: true,
+  getStorageInfoSync: true,
+  removeStorageSync: true,
+  clearStorageSync: true,
+  getSystemInfoSync: true,
+  getExtConfigSync: true,
+  getLogManager: true
+};
+var noPromiseApis = {
+  // 媒体
+  stopRecord: true,
+  getRecorderManager: true,
+  pauseVoice: true,
+  stopVoice: true,
+  pauseBackgroundAudio: true,
+  stopBackgroundAudio: true,
+  getBackgroundAudioManager: true,
+  createAudioContext: true,
+  createInnerAudioContext: true,
+  createVideoContext: true,
+  createCameraContext: true,
+  navigateBack: true,
+  // 位置
+  createMapContext: true,
+  // 设备
+  canIUse: true,
+  startAccelerometer: true,
+  stopAccelerometer: true,
+  startCompass: true,
+  stopCompass: true,
+  // 界面
+  hideToast: true,
+  hideLoading: true,
+  showNavigationBarLoading: true,
+  hideNavigationBarLoading: true,
+  createAnimation: true,
+  pageScrollTo: true,
+  createSelectorQuery: true,
+  createCanvasContext: true,
+  createContext: true,
+  drawCanvas: true,
+  hideKeyboard: true,
+  stopPullDownRefresh: true,
+  // 拓展接口
+  arrayBufferToBase64: true,
+  base64ToArrayBuffer: true,
+  getUpdateManager: true,
+  createWorker: true
+};
+var otherApis = {
+  // 网络
+  uploadFile: true,
+  downloadFile: true,
+  connectSocket: true,
+  sendSocketMessage: true,
+  closeSocket: true,
+  // 媒体
+  chooseImage: true,
+  previewImage: true,
+  getImageInfo: true,
+  saveImageToPhotosAlbum: true,
+  startRecord: true,
+  playVoice: true,
+  getBackgroundAudioPlayerState: true,
+  playBackgroundAudio: true,
+  seekBackgroundAudio: true,
+  chooseVideo: true,
+  saveVideoToPhotosAlbum: true,
+  loadFontFace: true,
+  // 文件
+  saveFile: true,
+  getFileInfo: true,
+  getSavedFileList: true,
+  getSavedFileInfo: true,
+  removeSavedFile: true,
+  openDocument: true,
+  // 数据缓存
+  setStorage: true,
+  getStorage: true,
+  getStorageInfo: true,
+  removeStorage: true,
+  clearStorage: true,
+  // 导航
+  navigateTo: true,
+  redirectTo: true,
+  switchTab: true,
+  reLaunch: true,
+  // 位置
+  getLocation: true,
+  chooseLocation: true,
+  openLocation: true,
+  // 设备
+  getSystemInfo: true,
+  getNetworkType: true,
+  makePhoneCall: true,
+  scanCode: true,
+  setClipboardData: true,
+  getClipboardData: true,
+  openBluetoothAdapter: true,
+  closeBluetoothAdapter: true,
+  getBluetoothAdapterState: true,
+  startBluetoothDevicesDiscovery: true,
+  stopBluetoothDevicesDiscovery: true,
+  getBluetoothDevices: true,
+  getConnectedBluetoothDevices: true,
+  createBLEConnection: true,
+  closeBLEConnection: true,
+  getBLEDeviceServices: true,
+  getBLEDeviceCharacteristics: true,
+  readBLECharacteristicValue: true,
+  writeBLECharacteristicValue: true,
+  notifyBLECharacteristicValueChange: true,
+  startBeaconDiscovery: true,
+  stopBeaconDiscovery: true,
+  getBeacons: true,
+  setScreenBrightness: true,
+  getScreenBrightness: true,
+  setKeepScreenOn: true,
+  vibrateLong: true,
+  vibrateShort: true,
+  addPhoneContact: true,
+  getHCEState: true,
+  startHCE: true,
+  stopHCE: true,
+  sendHCEMessage: true,
+  startWifi: true,
+  stopWifi: true,
+  connectWifi: true,
+  getWifiList: true,
+  setWifiList: true,
+  getConnectedWifi: true,
+  // 界面
+  showToast: true,
+  showLoading: true,
+  showModal: true,
+  showActionSheet: true,
+  setNavigationBarTitle: true,
+  setNavigationBarColor: true,
+  setTabBarBadge: true,
+  removeTabBarBadge: true,
+  showTabBarRedDot: true,
+  hideTabBarRedDot: true,
+  setTabBarStyle: true,
+  setTabBarItem: true,
+  showTabBar: true,
+  hideTabBar: true,
+  setTopBarText: true,
+  startPullDownRefresh: true,
+  canvasToTempFilePath: true,
+  canvasGetImageData: true,
+  canvasPutImageData: true,
+  // 第三方平台
+  getExtConfig: true,
+  // 开放接口
+  login: true,
+  authorize: true,
+  getUserInfo: true,
+  requestPayment: true,
+  showShareMenu: true,
+  hideShareMenu: true,
+  updateShareMenu: true,
+  getShareInfo: true,
+  chooseAddress: true,
+  addCard: true,
+  openCard: true,
+  openSetting: true,
+  getSetting: true,
+  getWeRunData: true,
+  navigateToMiniProgram: true,
+  navigateBackMiniProgram: true,
+  chooseInvoiceTitle: true,
+  checkIsSupportSoterAuthentication: true,
+  startSoterAuthentication: true,
+  checkIsSoterEnrolledInDevice: true //
+
+};
 
 /* eslint-disable camelcase */
 var eventCenter = new Events();
@@ -2404,6 +2603,7 @@ var rootScopeKey = '__root_';
 var componentPath = 'componentPath';
 var scopeMap = {};
 var pageExtraFns = ['onPullDownRefresh', 'onReachBottom', 'onShareAppMessage', 'onPageScroll', 'onTabItemTap'];
+var events = new Events();
 
 function processEvent(pagePath, eventHandlerName, obj) {
   var newEventHandlerName = eventHandlerName.replace(eventPreffix, '');
@@ -2520,7 +2720,7 @@ function initPage(weappPageConf, page, options) {
   return recurrenceComponent(weappPageConf, page);
 }
 
-function processDynamicComponents(page) {
+function processDynamicComponents(page, weappPageConf) {
   var pagePath = page.path;
   scopeMap[pagePath] = scopeMap[pagePath] || {};
 
@@ -2532,7 +2732,17 @@ function processDynamicComponents(page) {
         var loopRes = dynamicComponetFn();
         var stateName = loopRes.stateName;
         var loopComponents = loopRes.loopComponents;
-        var stateData = get(component.state, stateName);
+        var oldStateData = get(component.state, stateName);
+        var stateData;
+
+        if (Array.isArray(oldStateData)) {
+          stateData = oldStateData.slice(0);
+        } else {
+          stateData = Object.assign({}, oldStateData);
+        }
+
+        component._dyState = component._dyState || {};
+        set(component._dyState, stateName, stateData);
         recurrence(loopComponents, stateData, -1);
 
         function recurrence(loopComponents, stateData, level) {
@@ -2554,7 +2764,7 @@ function processDynamicComponents(page) {
 
             if (components && components.length) {
               components.forEach(function (item, index$$1) {
-                var comPath = "".concat(component.$path, "$$").concat(item.fn, "_").concat(level);
+                var comPath = "".concat(item.body.$path, "_").concat(index$$1);
                 var child;
                 Object.getOwnPropertyNames(component.$$dynamicComponents).forEach(function (c) {
                   if (c === comPath) {
@@ -2565,6 +2775,13 @@ function processDynamicComponents(page) {
 
                 if (!child) {
                   child = new _class(props);
+
+                  try {
+                    child.state = child._createData();
+                  } catch (err) {
+                    child.state = {};
+                  }
+
                   child.$path = comPath;
                   child.props.$path = comPath;
 
@@ -2572,48 +2789,55 @@ function processDynamicComponents(page) {
 
                   child._initData(component.$root || component, component);
 
-                  recursiveDynamicComponents(child);
                   componentTrigger(child, 'componentWillMount');
+                  events.on('page:onReady', function () {
+                    componentTrigger(child, 'componentDidMount');
+                  });
                 } else {
+                  props.$path = comPath;
                   child.$path = comPath;
-                  child.props = props;
                   child.props.$path = comPath;
-                  child.state = child._createData();
+                  child.prevProps = child.props;
+                  child.props = props;
+                  child._unsafeCallUpdate = true;
 
                   child._init(component.$scope);
 
                   child._initData(component.$root || component, component);
 
-                  recursiveDynamicComponents(child);
+                  updateComponent(child, false);
+                  child._unsafeCallUpdate = false;
                 }
 
+                recursiveDynamicComponents(child);
+
                 if (stateData) {
-                  stateData[index$$1] = Object.assign({}, child.props, _objectSpread({}, stateData[index$$1]), child.state);
+                  stateData[index$$1] = Object.assign({}, child.props, _objectSpread({}, stateData[index$$1]), Object.assign({}, child.state, child._dyState || {}));
                 }
 
                 component.$$dynamicComponents[comPath] = child;
                 scopeMap[pagePath][comPath] = child;
 
-                for (var k in child) {
-                  if (k.indexOf(eventPreffix) >= 0) {
-                    processEvent(pagePath, k, component);
-                  }
-                }
-
-                var prototypeChain = getPrototypeChain(child);
-                prototypeChain.forEach(function (item) {
-                  Object.getOwnPropertyNames(item).forEach(function (fn) {
-                    if (fn.indexOf(eventPreffix) >= 0) {
-                      processEvent(pagePath, fn, component);
+                if (weappPageConf) {
+                  for (var k in child) {
+                    if (k.indexOf(eventPreffix) >= 0) {
+                      processEvent(pagePath, k, weappPageConf);
                     }
+                  }
+
+                  var prototypeChain = getPrototypeChain(child);
+                  prototypeChain.forEach(function (item) {
+                    Object.getOwnPropertyNames(item).forEach(function (fn) {
+                      if (fn.indexOf(eventPreffix) >= 0) {
+                        processEvent(pagePath, fn, weappPageConf);
+                      }
+                    });
                   });
-                });
+                }
 
                 if (item.children && item.children.length) {
                   recurrence(item.children, stateData[index$$1], "".concat(index$$1, "_").concat(level));
                 }
-
-                recursiveDynamicComponents(item);
               });
             }
 
@@ -2635,9 +2859,6 @@ function componentTrigger(component, key) {
     component._disable = true;
   }
 
-  Object.getOwnPropertyNames(component.$$components || {}).forEach(function (name) {
-    componentTrigger(component.$$components[name], key);
-  });
   component[key] && typeof component[key] === 'function' && component[key]();
 
   if (key === 'componentWillMount') {
@@ -2650,7 +2871,7 @@ function componentTrigger(component, key) {
     component.state = component.getState();
 
     if (!component.$isComponent) {
-      component.forceUpdate();
+      updateComponent(component, true, true);
     }
   }
 }
@@ -2685,16 +2906,28 @@ function transformPropsForComponent(props, defaultProps, propTypes) {
 function createPage(PageClass, options) {
   var pageProps = transformPropsForComponent({}, PageClass.defaultProps, PageClass.propTypes);
   var page = new PageClass(pageProps);
+
+  try {
+    page.state = page._createData();
+  } catch (err) {
+    page.state = {};
+  }
+
   page.$isComponent = false;
   page.path = options.path;
   var weappPageConf = {
     onLoad: function onLoad(options) {
       page._init(this);
 
+      processDynamicComponents(page, weappPageConf);
+
+      page._initData();
+
       page.$router.params = options;
       componentTrigger(page, 'componentWillMount');
     },
     onReady: function onReady() {
+      events.trigger('page:onReady');
       componentTrigger(page, 'componentDidMount');
     },
     onShow: function onShow() {
@@ -2704,6 +2937,7 @@ function createPage(PageClass, options) {
       componentTrigger(page, 'componentDidHide');
     },
     onUnload: function onUnload() {
+      events.off('page:onReady');
       componentTrigger(page, 'componentWillUnmount');
     },
     _setData: function _setData(data, cb, isRoot) {
@@ -2726,7 +2960,6 @@ function createPage(PageClass, options) {
 
   page._initData();
 
-  processDynamicComponents(page);
   pageExtraFns.forEach(function (fn) {
     if (typeof page[fn] === 'function') {
       weappPageConf[fn] = page[fn].bind(page);
@@ -2747,7 +2980,7 @@ function createPage(PageClass, options) {
 }
 
 var DEV = typeof process === 'undefined' || !process.env || "development" !== 'production';
-function updateComponent(component, update) {
+function updateComponent(component, update, isFirst) {
   var props = component.props,
       propTypes$$1 = component.propTypes,
       type = component.type;
@@ -2757,15 +2990,7 @@ function updateComponent(component, update) {
     undefined(propTypes$$1, props, 'prop', displayName);
   }
 
-  var state = component.getState();
-
-  if (component._createData) {
-    state = component._createData(state);
-  }
-
-  state.__data && (state.__data.$path = component.$path);
   var prevProps = component.prevProps || props;
-  var prevState = component.prevState || state;
   component.props = prevProps;
 
   if (component._unsafeCallUpdate === true && component.componentWillReceiveProps) {
@@ -2774,12 +2999,22 @@ function updateComponent(component, update) {
     component._disable = false;
   }
 
+  var state = component.getState();
+
+  if (component._createData) {
+    state = component._createData(state, props);
+  }
+
+  state.__data && (state.__data.$path = component.$path);
+  var prevState = component.prevState || state;
   var skip = false;
 
-  if (typeof component.shouldComponentUpdate === 'function' && component.shouldComponentUpdate(props, state) === false) {
-    skip = true;
-  } else if (typeof component.componentWillUpdate === 'function') {
-    component.componentWillUpdate(props, state);
+  if (!isFirst) {
+    if (typeof component.shouldComponentUpdate === 'function' && component.shouldComponentUpdate(props, state) === false) {
+      skip = true;
+    } else if (typeof component.componentWillUpdate === 'function') {
+      component.componentWillUpdate(props, state);
+    }
   }
 
   component.props = props;
@@ -2787,21 +3022,6 @@ function updateComponent(component, update) {
   component._dirty = false;
 
   if (!skip) {
-    for (var k in component.$props) {
-      var childProps = component.$props[k].call(component);
-      var subComponent = component.$$components[k];
-      var newChildProps = Object.assign(subComponent.props, childProps);
-      subComponent._disable = true;
-
-      if (subComponent.componentWillReceiveProps) {
-        subComponent.componentWillReceiveProps(newChildProps);
-      }
-
-      subComponent._disable = false;
-      subComponent.props = newChildProps;
-      updateComponent(subComponent, false);
-    }
-
     var propsCopy = {};
     Object.keys(component.props).forEach(function (item) {
       if (typeof component.props[item] !== 'function') {
@@ -2810,7 +3030,7 @@ function updateComponent(component, update) {
     });
     Object.assign(component.$data, component.state, propsCopy);
 
-    if (component.componentDidUpdate) {
+    if (component.componentDidUpdate && !isFirst) {
       component.componentDidUpdate(prevProps, prevState);
     }
 
@@ -2822,17 +3042,18 @@ function updateComponent(component, update) {
 }
 
 function doUpdate(component, update) {
-  var $data = component.$root ? component.$root.$data : component.$data;
+  var $root = component.$root ? component.$root : component;
+  var $data = $root.$data;
 
   if (update) {
-    processDynamicComponents(component.$root || component);
-    Object.assign(component.$data, component.state);
+    processDynamicComponents($root);
+    $data = Object.assign($data, $root.state, $root._dyState || {});
   }
 
-  if (!component.$isComponent && component.$usedState && component.$usedState.length) {
+  if ($root.$usedState && $root.$usedState.length) {
     var data = {};
-    component.$usedState.forEach(function (key) {
-      var value = get(component.$data, key);
+    $root.$usedState.forEach(function (key) {
+      var value = get($data, key);
       set(data, key, value);
     });
     $data = data;
@@ -2879,6 +3100,12 @@ function () {
       value: {}
     });
     Object.defineProperty(this, "$$components", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: {}
+    });
+    Object.defineProperty(this, "$$dynamicComponents", {
       configurable: true,
       enumerable: true,
       writable: true,
@@ -2959,13 +3186,15 @@ function () {
       this.$root = $root || null;
       this.$parent = $parent || null;
       this.defaultData = {};
-      this.$data = $parent ? $parent.$data : {};
-      var path = this.$path.split('$$').pop();
-      this.$data["$$".concat(path)] = this.$data["$$".concat(path)] || {};
-      this.$data = this.$data["$$".concat(path)];
+      this.$data = {};
+      var state = this.state;
 
-      for (var k in this.state) {
-        this.$data[k] = this.state[k];
+      if (this._dyState) {
+        state = Object.assign({}, this.state, this._dyState);
+      }
+
+      for (var k in state) {
+        this.$data[k] = state[k];
       }
 
       if (this.props) {
@@ -2974,12 +3203,6 @@ function () {
             this.$data[_k] = this.props[_k];
           }
         }
-      }
-
-      if (this.$$components && !isEmptyObject(this.$$components)) {
-        Object.getOwnPropertyNames(this.$$components).forEach(function (name) {
-          _this.$$components[name]._initData(_this.$root || _this, _this);
-        });
       }
 
       if (this.$$dynamicComponents && !isEmptyObject(this.$$dynamicComponents)) {
@@ -2995,12 +3218,6 @@ function () {
 
       this.$scope = scope;
       this.$app = getApp();
-
-      if (this.$$components && !isEmptyObject(this.$$components)) {
-        Object.getOwnPropertyNames(this.$$components).forEach(function (name) {
-          _this2.$$components[name]._init(_this2.$scope);
-        });
-      }
 
       if (this.$$dynamicComponents && !isEmptyObject(this.$$dynamicComponents)) {
         Object.getOwnPropertyNames(this.$$dynamicComponents).forEach(function (name) {
@@ -3189,13 +3406,22 @@ function request(options) {
     };
   }
 
+  var originSuccess = options['success'];
+  var originFail = options['fail'];
+  var originComplete = options['complete'];
   var p = new Promise(function (resolve, reject) {
     options['success'] = function (res) {
+      originSuccess && originSuccess(res);
       resolve(res);
     };
 
     options['fail'] = function (res) {
+      originFail && originFail(res);
       reject(res);
+    };
+
+    options['complete'] = function (res) {
+      originComplete && originComplete(res);
     };
 
     RequestQueue.request(options);
@@ -3204,199 +3430,6 @@ function request(options) {
 }
 
 function processApis(taro) {
-  var onAndSyncApis = {
-    onSocketOpen: true,
-    onSocketError: true,
-    onSocketMessage: true,
-    onSocketClose: true,
-    onBackgroundAudioPlay: true,
-    onBackgroundAudioPause: true,
-    onBackgroundAudioStop: true,
-    onNetworkStatusChange: true,
-    onAccelerometerChange: true,
-    onCompassChange: true,
-    onBluetoothAdapterStateChange: true,
-    onBluetoothDeviceFound: true,
-    onBLEConnectionStateChange: true,
-    onBLECharacteristicValueChange: true,
-    onBeaconUpdate: true,
-    onBeaconServiceChange: true,
-    onUserCaptureScreen: true,
-    onHCEMessage: true,
-    onGetWifiList: true,
-    onWifiConnected: true,
-    setStorageSync: true,
-    getStorageSync: true,
-    getStorageInfoSync: true,
-    removeStorageSync: true,
-    clearStorageSync: true,
-    getSystemInfoSync: true,
-    getExtConfigSync: true
-  };
-  var noPromiseApis = {
-    // 媒体
-    stopRecord: true,
-    getRecorderManager: true,
-    pauseVoice: true,
-    stopVoice: true,
-    pauseBackgroundAudio: true,
-    stopBackgroundAudio: true,
-    getBackgroundAudioManager: true,
-    createAudioContext: true,
-    createInnerAudioContext: true,
-    createVideoContext: true,
-    createCameraContext: true,
-    navigateBack: true,
-    // 位置
-    createMapContext: true,
-    // 设备
-    canIUse: true,
-    startAccelerometer: true,
-    stopAccelerometer: true,
-    startCompass: true,
-    stopCompass: true,
-    // 界面
-    hideToast: true,
-    hideLoading: true,
-    showNavigationBarLoading: true,
-    hideNavigationBarLoading: true,
-    createAnimation: true,
-    pageScrollTo: true,
-    createSelectorQuery: true,
-    createCanvasContext: true,
-    createContext: true,
-    drawCanvas: true,
-    hideKeyboard: true,
-    stopPullDownRefresh: true,
-    // 拓展接口
-    arrayBufferToBase64: true,
-    base64ToArrayBuffer: true,
-    getUpdateManager: true,
-    createWorker: true
-  };
-  var otherApis = {
-    // 网络
-    uploadFile: true,
-    downloadFile: true,
-    connectSocket: true,
-    sendSocketMessage: true,
-    closeSocket: true,
-    // 媒体
-    chooseImage: true,
-    previewImage: true,
-    getImageInfo: true,
-    saveImageToPhotosAlbum: true,
-    startRecord: true,
-    playVoice: true,
-    getBackgroundAudioPlayerState: true,
-    playBackgroundAudio: true,
-    seekBackgroundAudio: true,
-    chooseVideo: true,
-    saveVideoToPhotosAlbum: true,
-    // 文件
-    saveFile: true,
-    getFileInfo: true,
-    getSavedFileList: true,
-    getSavedFileInfo: true,
-    removeSavedFile: true,
-    openDocument: true,
-    // 数据缓存
-    setStorage: true,
-    getStorage: true,
-    getStorageInfo: true,
-    removeStorage: true,
-    clearStorage: true,
-    // 导航
-    navigateTo: true,
-    redirectTo: true,
-    switchTab: true,
-    reLaunch: true,
-    // 位置
-    getLocation: true,
-    chooseLocation: true,
-    openLocation: true,
-    // 设备
-    getSystemInfo: true,
-    getNetworkType: true,
-    makePhoneCall: true,
-    scanCode: true,
-    setClipboardData: true,
-    getClipboardData: true,
-    openBluetoothAdapter: true,
-    closeBluetoothAdapter: true,
-    getBluetoothAdapterState: true,
-    startBluetoothDevicesDiscovery: true,
-    stopBluetoothDevicesDiscovery: true,
-    getBluetoothDevices: true,
-    getConnectedBluetoothDevices: true,
-    createBLEConnection: true,
-    closeBLEConnection: true,
-    getBLEDeviceServices: true,
-    getBLEDeviceCharacteristics: true,
-    readBLECharacteristicValue: true,
-    writeBLECharacteristicValue: true,
-    notifyBLECharacteristicValueChange: true,
-    startBeaconDiscovery: true,
-    stopBeaconDiscovery: true,
-    getBeacons: true,
-    setScreenBrightness: true,
-    getScreenBrightness: true,
-    setKeepScreenOn: true,
-    vibrateLong: true,
-    vibrateShort: true,
-    addPhoneContact: true,
-    getHCEState: true,
-    startHCE: true,
-    stopHCE: true,
-    sendHCEMessage: true,
-    startWifi: true,
-    stopWifi: true,
-    connectWifi: true,
-    getWifiList: true,
-    setWifiList: true,
-    getConnectedWifi: true,
-    // 界面
-    showToast: true,
-    showLoading: true,
-    showModal: true,
-    showActionSheet: true,
-    setNavigationBarTitle: true,
-    setNavigationBarColor: true,
-    setTabBarBadge: true,
-    removeTabBarBadge: true,
-    showTabBarRedDot: true,
-    hideTabBarRedDot: true,
-    setTabBarStyle: true,
-    setTabBarItem: true,
-    showTabBar: true,
-    hideTabBar: true,
-    setTopBarText: true,
-    startPullDownRefresh: true,
-    // 第三方平台
-    getExtConfig: true,
-    // 开放接口
-    login: true,
-    authorize: true,
-    getUserInfo: true,
-    requestPayment: true,
-    showShareMenu: true,
-    hideShareMenu: true,
-    updateShareMenu: true,
-    getShareInfo: true,
-    chooseAddress: true,
-    addCard: true,
-    openCard: true,
-    openSetting: true,
-    getSetting: true,
-    getWeRunData: true,
-    navigateToMiniProgram: true,
-    navigateBackMiniProgram: true,
-    chooseInvoiceTitle: true,
-    checkIsSupportSoterAuthentication: true,
-    startSoterAuthentication: true,
-    checkIsSoterEnrolledInDevice: true //
-
-  };
   var weApis = Object.assign({}, onAndSyncApis, noPromiseApis, otherApis);
   Object.keys(weApis).forEach(function (key) {
     if (!onAndSyncApis[key] && !noPromiseApis[key]) {

@@ -136,6 +136,12 @@ function connect(mapStateToProps, mapDispatchToProps) {
     Object.keys(newMapState).forEach(function (key) {
       var val = newMapState[key];
 
+      if (isObject(val) && isObject(initMapDispatch[key])) {
+        val = mergeObjects(val, initMapDispatch[key]);
+      }
+
+      _this.prevProps = Object.assign({}, _this.props);
+
       if (_this.props[key] !== val) {
         _this.props[key] = val;
         isChanged = true;
@@ -174,7 +180,7 @@ function connect(mapStateToProps, mapDispatchToProps) {
           key: "componentWillMount",
           value: function componentWillMount() {
             var store = getStore();
-            Object.assign(this.props, mapStateToProps(store.getState()), initMapDispatch);
+            Object.assign(this.props, mergeObjects(mapStateToProps(store.getState()), initMapDispatch));
             unSubscribe = store.subscribe(stateListener.bind(this));
 
             if (_get(Connect.prototype.__proto__ || Object.getPrototypeOf(Connect.prototype), "componentWillMount", this)) {

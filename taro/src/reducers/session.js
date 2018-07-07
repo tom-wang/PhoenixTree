@@ -2,7 +2,12 @@ import { SET_CODE, SET_USERINFO, SET_REGINFO } from '../constants/session'
 
 const INITIAL_STATE = {
   code: '',
-  userInfo: null, //-1表示getUserInfo返回错误，需要展示授权按钮
+  userInfo: {
+    loading: true
+  }, //-1表示getUserInfo返回错误，需要展示授权按钮
+  regInfo: {
+    loading: true
+  },
 }
 
 export default function session (state = INITIAL_STATE, action) {

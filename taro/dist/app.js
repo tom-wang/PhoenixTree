@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _index = require("./npm/@tarojs/taro-weapp/index.js");
@@ -51,7 +53,7 @@ var _App = function (_Component) {
       this.login().then(function () {
         wx.cloud.init();
         _this2.getCurrentUserInfo();
-        _this2.getUserInfoList();
+        _this2.getUserRegInfo();
       }).catch(function () {
         console.log(_arguments);
         console.log('catch');
@@ -113,23 +115,35 @@ var _App = function (_Component) {
       });
     }
   }, {
-    key: "getUserInfoList",
-    value: function getUserInfoList() {
+    key: "getUserRegInfo",
+    value: function getUserRegInfo() {
       //调用云函数
-      wx.cloud.callFunction({
+      return wx.cloud.callFunction({
         // 需调用的云函数名
         name: 'add',
         // 传给云函数的参数
         data: {
           a: 12,
           b: 19
-        },
-        // 成功回调
-        complete: console.log
+        }
+      }).then(function (result) {
+        console.log(result);
+        //调用云DB
+        var openId = result.result.openId;
+
+        var db = wx.cloud.database();
+        var member_info = db.collection('member_info');
+        return member_info.where({
+          _openid: openId
+        }).get().then(function (result) {
+          console.log(result);
+          store.dispatch((0, _session.setRegInfo)(_extends({}, result.data[0], {
+            openId: openId
+          })));
+        });
       });
       //调用云DB
-      var db = wx.cloud.database();
-      var member_info = db.collection('member_info');
+
       /*
       添加
       member_info.add({

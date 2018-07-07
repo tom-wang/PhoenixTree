@@ -26,11 +26,9 @@ var Avatar = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Avatar.__proto__ || Object.getPrototypeOf(Avatar)).call(this, props));
 
-    _this.$usedState = ["anonymousState__temp", "anonymousState__temp2", "src"];
-    _this.$props = {};
+    _this.$usedState = ["anonymousState__temp", "anonymousState__temp2", "isValidSrc"];
     _this.$components = {};
-
-    _this.state = _this._createData();
+    _this.$dynamicComponents = {};
     return _this;
   }
 
@@ -46,21 +44,24 @@ var Avatar = function (_Component) {
     key: "_createData",
     value: function _createData() {
       this.__state = arguments[0] || this.state || {};
+      this.__props = arguments[1] || this.props || {};
       {
-        var _props = this.props,
+        var _props = this.__props,
             src = _props.src,
             mold = _props.mold;
 
+        var isValidSrc = !!src;
         var anonymousState__temp = "avatar__pic avatar__mold--" + mold;
         var anonymousState__temp2 = "background-image: url(" + src + "); background-repeat: no-repeat; background-position: center center; background-size: cover";
         Object.assign(this.__state, {
           anonymousState__temp: anonymousState__temp,
           anonymousState__temp2: anonymousState__temp2,
-          src: src
+          isValidSrc: isValidSrc
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;
       }
+      delete this.__props;
       var __state = this.__state;
       delete this.__state;
       return __state;

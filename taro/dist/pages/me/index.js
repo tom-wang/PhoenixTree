@@ -61,20 +61,30 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
     _this.$usedState = ["userInfo", "$$Avatar"];
-    _this.$props = {
-      Avatar: function Avatar() {
-        return {
-          $name: "Avatar",
-          count: "7",
-          src: (0, _index.internal_safe_get)(this.state, "userInfo.avatarUrl")
-        };
-      }
-    };
     _this.$components = {
       Avatar: _index5.default
     };
+    _this.$dynamicComponents = {
+      $ba65cf83: function $ba65cf83() {
+        var nodes = [{
+          name: "Avatar",
+          path: _index5.default,
+          subscript: "",
 
-    _this.state = _this._createData();
+          args: function args() {
+            return {
+              count: "7",
+              src: (0, _index.internal_safe_get)(__item, "userInfo.avatarUrl"),
+              $path: "$ba65cf83"
+            };
+          }
+        }];
+        return {
+          stateName: "$$Avatar",
+          loopComponents: (0, _index.internal_dynamic_recursive)(_this, nodes, (0, _index.internal_safe_get)(_this.state, "$$Avatar"), "$ba65cf83")
+        };
+      }
+    };
     return _this;
   }
 
@@ -88,6 +98,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     key: "_createData",
     value: function _createData() {
       this.__state = arguments[0] || this.state || {};
+      this.__props = arguments[1] || this.props || {};
       {
         /*return (
           <View className='todo'>
@@ -109,14 +120,20 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           </View>
         )
         */
-        var userInfo = this.props.session.userInfo;
+        var userInfo = this.__props.session.userInfo;
 
         Object.assign(this.__state, {
-          userInfo: userInfo
+          userInfo: userInfo,
+          $$Avatar: [{
+            $path: "$ba65cf83_0",
+            count: "7",
+            src: userInfo.avatarUrl
+          }]
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;
       }
+      delete this.__props;
       var __state = this.__state;
       delete this.__state;
       return __state;

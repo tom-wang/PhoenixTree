@@ -1,15 +1,31 @@
-import { SET_CODE, SET_USERINFO } from '../constants/session'
+"use strict";
 
-export function setCode(code) {
-    return {
-        type: SET_CODE,
-        payload: code
-    }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setCode = setCode;
+exports.setUserInfo = setUserInfo;
+exports.setRegInfo = setRegInfo;
+
+var _session = require("../constants/session.js");
+
+function setCode(code) {
+  return {
+    type: _session.SET_CODE,
+    payload: code
+  };
 }
 
-export function setUserInfo(userInfo) {
-    return {
-        type: SET_USERINFO,
-        payload: userInfo
-    }
+function setUserInfo(userInfo) {
+  return {
+    type: _session.SET_USERINFO,
+    payload: userInfo
+  };
+}
+
+function setRegInfo(info) {
+  return {
+    type: _session.SET_REGINFO,
+    payload: info
+  };
 }

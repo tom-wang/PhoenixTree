@@ -7,6 +7,7 @@ export default class Avatar extends Component {
         src: '',
         mold: 'circle'
     }
+
     onClick(event) {
         console.log(event);
         //var detail = event.detail;
@@ -16,10 +17,9 @@ export default class Avatar extends Component {
 
     render() {
         let {src, mold} = this.props;
-        return (
-            <View class="avatar" onClick={this.onClick.bind(this)}>
-                { src && <view class={`avatar__pic avatar__mold--${mold}`} style={`background-image: url(${src}); background-repeat: no-repeat; background-position: center center; background-size: cover`}></view> }
-            </View>
-        )
+        let isValidSrc = !!src;
+        return <View className="avatar" onClick={this.onClick.bind(this)}>
+                { isValidSrc && <view class={`avatar__pic avatar__mold--${mold}`} style={`background-image: url(${src}); background-repeat: no-repeat; background-position: center center; background-size: cover`}></view> }
+            </View>;
     }
 }

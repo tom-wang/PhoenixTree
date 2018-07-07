@@ -116,7 +116,7 @@ class App extends Component {
       const db = wx.cloud.database()
       const member_info = db.collection('member_info')
       return member_info.where({
-        _openid: 'ow7kc0crTq1IEGlBGhcpZRZNyaeI'
+        _openid: openId
       }).get().then(result => {
         console.log(result);
         store.dispatch(setRegInfo({

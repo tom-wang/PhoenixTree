@@ -9,7 +9,8 @@
         </block>
         <block wx:else>
             <view>
-                <template is="Avatar" data="{{...$$Avatar}}"></template>
+                <template is="Avatar" data="{{...item}}" wx:for-item="item" wx:for="{{$$Avatar}}"
+                wx:key="{{52386143}}"></template>
             </view>
         </block>
     </block>

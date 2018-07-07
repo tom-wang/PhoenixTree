@@ -22,6 +22,12 @@ var _counter = require("../../actions/counter.js");
 
 var _session = require("../../actions/session.js");
 
+var _const = require("../../utils/const.js");
+
+var Const = _interopRequireWildcard(_const);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -60,27 +66,48 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
-    _this.$usedState = ["userInfo", "$$Avatar"];
-    _this.$props = {
-      Avatar: function Avatar() {
-        return {
-          $name: "Avatar",
-          count: "7",
-          src: (0, _index.internal_safe_get)(this.state, "userInfo.avatarUrl")
-        };
-      }
-    };
+    _this.$usedState = ["isLoading", "isNotAuth", "$$Avatar"];
     _this.$components = {
       Avatar: _index5.default
     };
+    _this.$dynamicComponents = {
+      $b67cf65c: function $b67cf65c() {
+        var nodes = [{
+          name: "Avatar",
+          path: _index5.default,
+          subscript: "",
 
-    _this.state = _this._createData();
+          args: function args() {
+            return {
+              src: (0, _index.internal_safe_get)(__item, "userInfo.avatarUrl"),
+              $path: "$b67cf65c"
+            };
+          }
+        }];
+        return {
+          stateName: "$$Avatar",
+          loopComponents: (0, _index.internal_dynamic_recursive)(_this, nodes, (0, _index.internal_safe_get)(_this.state, "$$Avatar"), "$b67cf65c")
+        };
+      }
+    };
     return _this;
   }
 
   _createClass(Index, [{
-    key: "__event_onGetUserInfo",
-    value: function __event_onGetUserInfo(e) {
+    key: "componentWillMount",
+    value: function componentWillMount() {}
+  }, {
+    key: "fetchUserInfoList",
+    value: function fetchUserInfoList() {
+      var db = wx.cloud.database();
+      var member_info = db.collection('member_info');
+      return member_info.get().then(function (result) {
+        console.log('======', result);
+      });
+    }
+  }, {
+    key: "onGetUserInfo",
+    value: function onGetUserInfo(e) {
       console.log(e.detail.userInfo);
       this.props.setUserInfo(e.detail.userInfo);
     }
@@ -99,7 +126,39 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     key: "_createData",
     value: function _createData() {
       this.__state = arguments[0] || this.state || {};
+      this.__props = arguments[1] || this.props || {};
       {
+        var _props$session = this.__props.session,
+            userInfo = _props$session.userInfo,
+            regInfo = _props$session.regInfo;
+        // 如果授权通过了，则拉取成员列表
+
+        if (Const.REG_STATUS_2 == regInfo.state) {
+          this.fetchUserInfoList();
+        }
+        //isLoading必须是布尔值
+        var isLoading = !!(userInfo.loading || regInfo.loading);
+        if (isLoading) {
+          wx.showLoading({
+            title: '拼命加载中...'
+          });
+          wx.hideTabBar();
+        } else {
+          wx.hideLoading();
+          wx.showTabBar();
+        }
+        var isNotAuth = -1 === userInfo;
+
+        if (isLoading) {}
+
+        /*
+        return -1 === userInfo ? <View>
+          <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
+        </View> : <View>
+          
+          <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
+        </View>;
+        */
         /*return (
           <View className='todo'>
             <button open-type="getUserInfo">授权</button>
@@ -120,14 +179,20 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           </View>
         )
         */
-        var userInfo = this.props.session.userInfo;
+        if (isNotAuth) {}
 
         Object.assign(this.__state, {
-          userInfo: userInfo
+          isLoading: isLoading,
+          isNotAuth: isNotAuth,
+          $$Avatar: [{
+            $path: "$b67cf65c_0",
+            src: userInfo.avatarUrl
+          }]
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;
       }
+      delete this.__props;
       var __state = this.__state;
       delete this.__state;
       return __state;

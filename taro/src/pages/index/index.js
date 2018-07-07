@@ -6,6 +6,7 @@ import Avatar from '../../components/avatar/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { setUserInfo } from '../../actions/session'
+import * as Const from '../../utils/const'
 
 @connect(({ counter, session }) => ({
   counter,
@@ -29,6 +30,17 @@ export default class Index extends Component {
     navigationBarTitleText: '梧桐树下Plus'
   }
 
+  componentWillMount() {
+  }
+
+  fetchUserInfoList() {
+    const db = wx.cloud.database()
+    const member_info = db.collection('member_info')
+    return member_info.get().then(result => {
+      console.log('======', result);
+    })
+  }
+
   onGetUserInfo(e) {
     console.log(e.detail.userInfo)
     this.props.setUserInfo(e.detail.userInfo)
@@ -45,13 +57,56 @@ export default class Index extends Component {
   }
 
   render () {
-    const { userInfo } = this.props.session;
+    const { userInfo, regInfo } = this.props.session;
+    // 如果授权通过了，则拉取成员列表
+    if(Const.REG_STATUS_2 == regInfo.state) {
+      this.fetchUserInfoList();
+    }
+    //isLoading必须是布尔值
+    let isLoading = !!(userInfo.loading || regInfo.loading);
+    if(isLoading) {
+      wx.showLoading({
+        title: '拼命加载中...'
+      });
+      wx.hideTabBar();
+    } else {
+      wx.hideLoading();
+      wx.showTabBar();
+    }
+    let isNotAuth = -1 === userInfo;
+    
+    if(isLoading) {
+      return null;
+    }
+    
+    if(isNotAuth) {
+      return (
+        <View>
+          <View>
+            <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
+          </View>
+        </View>
+      )
+    }
+
+    
+    return (
+      <View>
+        <View>
+          <Avatar src={userInfo.avatarUrl} />
+          <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
+        </View>
+      </View>
+    )
+    
+    /*
     return -1 === userInfo ? <View>
       <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
     </View> : <View>
-      <Avatar count="7" src={userInfo.avatarUrl} />
+      
       <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
     </View>;
+    */
     /*return (
       <View className='todo'>
         <button open-type="getUserInfo">授权</button>
