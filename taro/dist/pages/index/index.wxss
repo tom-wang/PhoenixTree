@@ -1,3 +1,4 @@
+@import "../../components/avatar/index.wxss";
 .avatar {
   display: block;
   width: 120rpx;

@@ -56,6 +56,9 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     },
     setUserInfo: function setUserInfo(userInfo) {
       dispatch((0, _session.setUserInfo)(userInfo));
+    },
+    setUserInfoList: function setUserInfoList(list) {
+      dispatch((0, _session.setUserInfoList)(list));
     }
   };
 }), _dec(_class = function (_Component) {
@@ -66,9 +69,20 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
-    _this.$usedState = ["isLoading", "isNotAuth"];
-    _this.$components = {};
-    _this.$dynamicComponents = {};
+    _this.$usedState = ["userInfo", "isLoading", "isNotAuth", "$$Avatar"];
+    _this.$props = {
+      Avatar: function Avatar() {
+        return {
+          $name: "Avatar",
+          src: (0, _index.internal_safe_get)(this.state, "userInfo.avatarUrl")
+        };
+      }
+    };
+    _this.$components = {
+      Avatar: _index5.default
+    };
+
+    _this.state = _this._createData();
     return _this;
   }
 
@@ -78,15 +92,21 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
   }, {
     key: "fetchUserInfoList",
     value: function fetchUserInfoList() {
+      var _this2 = this;
+
       var db = wx.cloud.database();
       var member_info = db.collection('member_info');
-      return member_info.get().then(function (result) {
+      //取状态是2的用户数据，即审核通过的
+      return member_info.where({
+        state: Const.REG_STATUS_2
+      }).get().then(function (result) {
         console.log('======', result);
+        _this2.props.setUserInfoList(result.data);
       });
     }
   }, {
-    key: "onGetUserInfo",
-    value: function onGetUserInfo(e) {
+    key: "__event_onGetUserInfo",
+    value: function __event_onGetUserInfo(e) {
       console.log(e.detail.userInfo);
       this.props.setUserInfo(e.detail.userInfo);
     }
@@ -109,10 +129,11 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
       {
         var _props$session = this.__props.session,
             userInfo = _props$session.userInfo,
-            regInfo = _props$session.regInfo;
-        // 如果授权通过了，则拉取成员列表
+            regInfo = _props$session.regInfo,
+            userInfoList = _props$session.userInfoList;
+        // 如果授权通过了并且没有拉取过成员列表，则拉取成员列表
 
-        if (Const.REG_STATUS_2 == regInfo.state) {
+        if (Const.REG_STATUS_2 == regInfo.state && !userInfoList) {
           this.fetchUserInfoList();
         }
         //isLoading必须是布尔值
@@ -166,6 +187,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
         if (isNotAuth) {}
 
         Object.assign(this.__state, {
+          userInfo: userInfo,
           isLoading: isLoading,
           isNotAuth: isNotAuth
         });

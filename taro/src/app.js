@@ -15,14 +15,20 @@ class App extends Component {
       'pages/me/index'
     ],
     tabBar: {
+      color: '#8a8a8a',
+      selectedColor: '#13227a',
       list: [
         {
           pagePath: 'pages/index/index',
-          text: '通讯录'
+          text: '通讯录',
+          iconPath: './static/phonebook.png',
+          selectedIconPath: './static/phonebook_hover.png'
         },
         {
           pagePath: 'pages/me/index',
-          text: '我'
+          text: '我',
+          iconPath: './static/me.png',
+          selectedIconPath: './static/me_hover.png'
         }
       ]
     },

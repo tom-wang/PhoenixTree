@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.setCode = setCode;
 exports.setUserInfo = setUserInfo;
 exports.setRegInfo = setRegInfo;
+exports.setUserInfoList = setUserInfoList;
 
 var _session = require("../constants/session.js");
 
@@ -27,5 +28,12 @@ function setRegInfo(info) {
   return {
     type: _session.SET_REGINFO,
     payload: info
+  };
+}
+
+function setUserInfoList(list) {
+  return {
+    type: _session.SET_USERINFOLIST,
+    payload: list
   };
 }

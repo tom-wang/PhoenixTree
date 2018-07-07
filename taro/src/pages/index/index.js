@@ -5,7 +5,7 @@ import './index.scss'
 import Avatar from '../../components/avatar/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import { setUserInfo } from '../../actions/session'
+import { setUserInfo, setUserInfoList } from '../../actions/session'
 import * as Const from '../../utils/const'
 
 @connect(({ counter, session }) => ({
@@ -23,6 +23,9 @@ import * as Const from '../../utils/const'
   },
   setUserInfo(userInfo) {
     dispatch(setUserInfo(userInfo))
+  },
+  setUserInfoList(list) {
+    dispatch(setUserInfoList(list))
   }
 }))
 export default class Index extends Component {
@@ -36,8 +39,12 @@ export default class Index extends Component {
   fetchUserInfoList() {
     const db = wx.cloud.database()
     const member_info = db.collection('member_info')
-    return member_info.get().then(result => {
+    //取状态是2的用户数据，即审核通过的
+    return member_info.where({
+      state: Const.REG_STATUS_2
+    }).get().then(result => {
       console.log('======', result);
+      this.props.setUserInfoList(result.data);
     })
   }
 
@@ -57,9 +64,9 @@ export default class Index extends Component {
   }
 
   render () {
-    const { userInfo, regInfo } = this.props.session;
-    // 如果授权通过了，则拉取成员列表
-    if(Const.REG_STATUS_2 == regInfo.state) {
+    const { userInfo, regInfo, userInfoList } = this.props.session;
+    // 如果授权通过了并且没有拉取过成员列表，则拉取成员列表
+    if(Const.REG_STATUS_2 == regInfo.state && !userInfoList) {
       this.fetchUserInfoList();
     }
     //isLoading必须是布尔值
@@ -94,10 +101,10 @@ export default class Index extends Component {
       )
     }
 
-    
     return (
       <View>
         <View>
+          <Avatar src={userInfo.avatarUrl} />
           <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
         </View>
       </View>

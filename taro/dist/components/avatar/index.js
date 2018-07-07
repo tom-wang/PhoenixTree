@@ -27,8 +27,10 @@ var Avatar = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Avatar.__proto__ || Object.getPrototypeOf(Avatar)).call(this, props));
 
     _this.$usedState = ["anonymousState__temp", "anonymousState__temp2", "isValidSrc"];
+    _this.$props = {};
     _this.$components = {};
-    _this.$dynamicComponents = {};
+
+    _this.state = _this._createData();
     return _this;
   }
 

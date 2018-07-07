@@ -17,7 +17,8 @@ var INITIAL_STATE = {
   }, //-1表示getUserInfo返回错误，需要展示授权按钮
   regInfo: {
     loading: true
-  }
+  },
+  userInfoList: false
 };
 
 function session() {
@@ -36,6 +37,10 @@ function session() {
     case _session.SET_REGINFO:
       return _extends({}, state, {
         regInfo: action.payload
+      });
+    case _session.SET_USERINFOLIST:
+      return _extends({}, state, {
+        userInfoList: action.payload || []
       });
     default:
       return state;

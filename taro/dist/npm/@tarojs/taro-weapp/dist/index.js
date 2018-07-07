@@ -1667,151 +1667,6 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-
-
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-var emptyFunction_1 = emptyFunction;
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if ("development" !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-
-    throw error;
-  }
-}
-
-var invariant_1 = invariant;
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-
-var warning = emptyFunction_1;
-
-if ("development" !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-var warning_1 = warning;
-
 /*
 object-assign
 (c) Sindre Sorhus
@@ -1917,11 +1772,26 @@ var objectAssign = shouldUseNative() ? Object.assign : function (target, source)
 var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 var ReactPropTypesSecret_1 = ReactPropTypesSecret;
 
+var printWarning = function printWarning() {};
+
 if ("development" !== 'production') {
-  var invariant$1 = invariant_1;
-  var warning$1 = warning_1;
   var ReactPropTypesSecret$1 = ReactPropTypesSecret_1;
   var loggedTypeFailures = {};
+
+  printWarning = function printWarning(text) {
+    var message = 'Warning: ' + text;
+
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
 }
 /**
  * Assert that the values match with the type specs.
@@ -1947,20 +1817,27 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
         try {
           // This is intentionally an invariant that gets caught. It's the same
           // behavior as without this statement except with a better message.
-          invariant$1(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, _typeof(typeSpecs[typeSpecName]));
+          if (typeof typeSpecs[typeSpecName] !== 'function') {
+            var err = Error((componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' + 'it must be a function, usually from the `prop-types` package, but received `' + _typeof(typeSpecs[typeSpecName]) + '`.');
+            err.name = 'Invariant Violation';
+            throw err;
+          }
+
           error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret$1);
         } catch (ex) {
           error = ex;
         }
 
-        warning$1(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, _typeof(error));
+        if (error && !(error instanceof Error)) {
+          printWarning((componentName || 'React class') + ': type specification of ' + location + ' `' + typeSpecName + '` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a ' + _typeof(error) + '. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).');
+        }
 
         if (error instanceof Error && !(error.message in loggedTypeFailures)) {
           // Only monitor this failure once because there tends to be a lot of the
           // same error.
           loggedTypeFailures[error.message] = true;
           var stack = getStack ? getStack() : '';
-          warning$1(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
+          printWarning('Failed ' + location + ' type: ' + error.message + (stack != null ? stack : ''));
         }
       }
     }
@@ -1968,6 +1845,29 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 }
 
 var checkPropTypes_1 = checkPropTypes;
+
+var printWarning$1 = function printWarning() {};
+
+if ("development" !== 'production') {
+  printWarning$1 = function printWarning(text) {
+    var message = 'Warning: ' + text;
+
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+}
+
+function emptyFunctionThatReturnsNull() {
+  return null;
+}
 
 var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -2116,14 +2016,16 @@ var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, t
       if (secret !== ReactPropTypesSecret_1) {
         if (throwOnDirectAccess) {
           // New behavior only for users of `prop-types` package
-          invariant_1(false, 'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use `PropTypes.checkPropTypes()` to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
+          var err = new Error('Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use `PropTypes.checkPropTypes()` to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
+          err.name = 'Invariant Violation';
+          throw err;
         } else if ("development" !== 'production' && typeof console !== 'undefined') {
           // Old behavior for people using React.PropTypes
           var cacheKey = componentName + ':' + propName;
 
           if (!manualPropTypeCallCache[cacheKey] && // Avoid spamming the console because they are often not actionable except for lib authors
           manualPropTypeWarningCount < 3) {
-            warning_1(false, 'You are manually calling a React.PropTypes validation ' + 'function for the `%s` prop on `%s`. This is deprecated ' + 'and will throw in the standalone `prop-types` package. ' + 'You may be seeing this warning due to a third-party PropTypes ' + 'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.', propFullName, componentName);
+            printWarning$1('You are manually calling a React.PropTypes validation ' + 'function for the `' + propFullName + '` prop on `' + componentName + '`. This is deprecated ' + 'and will throw in the standalone `prop-types` package. ' + 'You may be seeing this warning due to a third-party PropTypes ' + 'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.');
             manualPropTypeCallCache[cacheKey] = true;
             manualPropTypeWarningCount++;
           }
@@ -2170,7 +2072,7 @@ var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, t
   }
 
   function createAnyTypeChecker() {
-    return createChainableTypeChecker(emptyFunction_1.thatReturnsNull);
+    return createChainableTypeChecker(emptyFunctionThatReturnsNull);
   }
 
   function createArrayOfTypeChecker(typeChecker) {
@@ -2231,8 +2133,8 @@ var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, t
 
   function createEnumTypeChecker(expectedValues) {
     if (!Array.isArray(expectedValues)) {
-      "development" !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
-      return emptyFunction_1.thatReturnsNull;
+      "development" !== 'production' ? printWarning$1('Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
+      return emptyFunctionThatReturnsNull;
     }
 
     function validate(props, propName, componentName, location, propFullName) {
@@ -2282,16 +2184,16 @@ var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, t
 
   function createUnionTypeChecker(arrayOfTypeCheckers) {
     if (!Array.isArray(arrayOfTypeCheckers)) {
-      "development" !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
-      return emptyFunction_1.thatReturnsNull;
+      "development" !== 'production' ? printWarning$1('Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
+      return emptyFunctionThatReturnsNull;
     }
 
     for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
       var checker = arrayOfTypeCheckers[i];
 
       if (typeof checker !== 'function') {
-        warning_1(false, 'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' + 'received %s at index %s.', getPostfixForTypeWarning(checker), i);
-        return emptyFunction_1.thatReturnsNull;
+        printWarning$1('Invalid argument supplied to oneOfType. Expected an array of check functions, but ' + 'received ' + getPostfixForTypeWarning(checker) + ' at index ' + i + '.');
+        return emptyFunctionThatReturnsNull;
       }
     }
 
@@ -2533,6 +2435,8 @@ var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, t
   return ReactPropTypes;
 };
 
+function emptyFunction() {}
+
 var factoryWithThrowingShims = function factoryWithThrowingShims() {
   function shim(props, propName, componentName, location, propFullName, secret) {
     if (secret === ReactPropTypesSecret_1) {
@@ -2540,7 +2444,9 @@ var factoryWithThrowingShims = function factoryWithThrowingShims() {
       return;
     }
 
-    invariant_1(false, 'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
+    var err = new Error('Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
+    err.name = 'Invariant Violation';
+    throw err;
   }
   shim.isRequired = shim;
 
@@ -2568,7 +2474,7 @@ var factoryWithThrowingShims = function factoryWithThrowingShims() {
     shape: getShim,
     exact: getShim
   };
-  ReactPropTypes.checkPropTypes = emptyFunction_1;
+  ReactPropTypes.checkPropTypes = emptyFunction;
   ReactPropTypes.PropTypes = ReactPropTypes;
   return ReactPropTypes;
 };
@@ -2732,15 +2638,7 @@ function processDynamicComponents(page, weappPageConf) {
         var loopRes = dynamicComponetFn();
         var stateName = loopRes.stateName;
         var loopComponents = loopRes.loopComponents;
-        var oldStateData = get(component.state, stateName);
-        var stateData;
-
-        if (Array.isArray(oldStateData)) {
-          stateData = oldStateData.slice(0);
-        } else {
-          stateData = Object.assign({}, oldStateData);
-        }
-
+        var stateData = Object.assign({}, get(component.state, stateName));
         component._dyState = component._dyState || {};
         set(component._dyState, stateName, stateData);
         recurrence(loopComponents, stateData, -1);
@@ -2764,7 +2662,7 @@ function processDynamicComponents(page, weappPageConf) {
 
             if (components && components.length) {
               components.forEach(function (item, index$$1) {
-                var comPath = "".concat(item.body.$path, "_").concat(index$$1);
+                var comPath = "".concat(component.$path, "$$").concat(item.fn, "_").concat(level);
                 var child;
                 Object.getOwnPropertyNames(component.$$dynamicComponents).forEach(function (c) {
                   if (c === comPath) {
@@ -2775,13 +2673,6 @@ function processDynamicComponents(page, weappPageConf) {
 
                 if (!child) {
                   child = new _class(props);
-
-                  try {
-                    child.state = child._createData();
-                  } catch (err) {
-                    child.state = {};
-                  }
-
                   child.$path = comPath;
                   child.props.$path = comPath;
 
@@ -2793,26 +2684,25 @@ function processDynamicComponents(page, weappPageConf) {
                   events.on('page:onReady', function () {
                     componentTrigger(child, 'componentDidMount');
                   });
+                  recursiveDynamicComponents(child);
                 } else {
-                  props.$path = comPath;
                   child.$path = comPath;
                   child.props.$path = comPath;
                   child.prevProps = child.props;
                   child.props = props;
                   child._unsafeCallUpdate = true;
+                  updateComponent(child, false);
+                  child._unsafeCallUpdate = false;
 
                   child._init(component.$scope);
 
                   child._initData(component.$root || component, component);
 
-                  updateComponent(child, false);
-                  child._unsafeCallUpdate = false;
+                  recursiveDynamicComponents(child);
                 }
 
-                recursiveDynamicComponents(child);
-
                 if (stateData) {
-                  stateData[index$$1] = Object.assign({}, child.props, _objectSpread({}, stateData[index$$1]), Object.assign({}, child.state, child._dyState || {}));
+                  stateData[index$$1] = Object.assign({}, child.props, _objectSpread({}, stateData[index$$1]), child.state);
                 }
 
                 component.$$dynamicComponents[comPath] = child;
@@ -2838,6 +2728,8 @@ function processDynamicComponents(page, weappPageConf) {
                 if (item.children && item.children.length) {
                   recurrence(item.children, stateData[index$$1], "".concat(index$$1, "_").concat(level));
                 }
+
+                recursiveDynamicComponents(item);
               });
             }
 
@@ -2859,6 +2751,9 @@ function componentTrigger(component, key) {
     component._disable = true;
   }
 
+  Object.getOwnPropertyNames(component.$$components || {}).forEach(function (name) {
+    componentTrigger(component.$$components[name], key);
+  });
   component[key] && typeof component[key] === 'function' && component[key]();
 
   if (key === 'componentWillMount') {
@@ -2906,22 +2801,11 @@ function transformPropsForComponent(props, defaultProps, propTypes) {
 function createPage(PageClass, options) {
   var pageProps = transformPropsForComponent({}, PageClass.defaultProps, PageClass.propTypes);
   var page = new PageClass(pageProps);
-
-  try {
-    page.state = page._createData();
-  } catch (err) {
-    page.state = {};
-  }
-
   page.$isComponent = false;
   page.path = options.path;
   var weappPageConf = {
     onLoad: function onLoad(options) {
       page._init(this);
-
-      processDynamicComponents(page, weappPageConf);
-
-      page._initData();
 
       page.$router.params = options;
       componentTrigger(page, 'componentWillMount');
@@ -2957,6 +2841,7 @@ function createPage(PageClass, options) {
     }
   };
   var weappPageConfEvents = initPage(weappPageConf, page, options);
+  processDynamicComponents(page, weappPageConf);
 
   page._initData();
 
@@ -3022,6 +2907,21 @@ function updateComponent(component, update, isFirst) {
   component._dirty = false;
 
   if (!skip) {
+    for (var k in component.$props) {
+      var childProps = component.$props[k].call(component);
+      var subComponent = component.$$components[k];
+      var newChildProps = Object.assign({}, subComponent.props, childProps);
+      subComponent._disable = true;
+
+      if (subComponent.componentWillReceiveProps && !isFirst) {
+        subComponent.componentWillReceiveProps(newChildProps);
+      }
+
+      subComponent._disable = false;
+      subComponent.props = newChildProps;
+      updateComponent(subComponent, false, isFirst);
+    }
+
     var propsCopy = {};
     Object.keys(component.props).forEach(function (item) {
       if (typeof component.props[item] !== 'function') {
@@ -3042,18 +2942,17 @@ function updateComponent(component, update, isFirst) {
 }
 
 function doUpdate(component, update) {
-  var $root = component.$root ? component.$root : component;
-  var $data = $root.$data;
+  var $data = component.$root ? component.$root.$data : component.$data;
 
   if (update) {
-    processDynamicComponents($root);
-    $data = Object.assign($data, $root.state, $root._dyState || {});
+    processDynamicComponents(component.$root || component);
+    Object.assign(component.$data, component.state, component._dyState || {});
   }
 
-  if ($root.$usedState && $root.$usedState.length) {
+  if (!component.$isComponent && component.$usedState && component.$usedState.length) {
     var data = {};
-    $root.$usedState.forEach(function (key) {
-      var value = get($data, key);
+    component.$usedState.forEach(function (key) {
+      var value = get(component.$data, key);
       set(data, key, value);
     });
     $data = data;
@@ -3100,12 +2999,6 @@ function () {
       value: {}
     });
     Object.defineProperty(this, "$$components", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: {}
-    });
-    Object.defineProperty(this, "$$dynamicComponents", {
       configurable: true,
       enumerable: true,
       writable: true,
@@ -3186,7 +3079,10 @@ function () {
       this.$root = $root || null;
       this.$parent = $parent || null;
       this.defaultData = {};
-      this.$data = {};
+      this.$data = $parent ? $parent.$data || {} : {};
+      var path = this.$path.split('$$').pop();
+      this.$data["$$".concat(path)] = this.$data["$$".concat(path)] || {};
+      this.$data = this.$data["$$".concat(path)];
       var state = this.state;
 
       if (this._dyState) {
@@ -3205,6 +3101,12 @@ function () {
         }
       }
 
+      if (this.$$components && !isEmptyObject(this.$$components)) {
+        Object.getOwnPropertyNames(this.$$components).forEach(function (name) {
+          _this.$$components[name]._initData(_this.$root || _this, _this);
+        });
+      }
+
       if (this.$$dynamicComponents && !isEmptyObject(this.$$dynamicComponents)) {
         Object.getOwnPropertyNames(this.$$dynamicComponents).forEach(function (name) {
           _this.$$dynamicComponents[name]._initData(_this.$root || _this, _this);
@@ -3218,6 +3120,12 @@ function () {
 
       this.$scope = scope;
       this.$app = getApp();
+
+      if (this.$$components && !isEmptyObject(this.$$components)) {
+        Object.getOwnPropertyNames(this.$$components).forEach(function (name) {
+          _this2.$$components[name]._init(_this2.$scope);
+        });
+      }
 
       if (this.$$dynamicComponents && !isEmptyObject(this.$$dynamicComponents)) {
         Object.getOwnPropertyNames(this.$$dynamicComponents).forEach(function (name) {

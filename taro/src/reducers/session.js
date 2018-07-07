@@ -1,4 +1,4 @@
-import { SET_CODE, SET_USERINFO, SET_REGINFO } from '../constants/session'
+import { SET_CODE, SET_USERINFO, SET_REGINFO, SET_USERINFOLIST } from '../constants/session'
 
 const INITIAL_STATE = {
   code: '',
@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   regInfo: {
     loading: true
   },
+  userInfoList: false,
 }
 
 export default function session (state = INITIAL_STATE, action) {
@@ -26,6 +27,11 @@ export default function session (state = INITIAL_STATE, action) {
       return {
         ...state,
         regInfo: action.payload
+      }
+    case SET_USERINFOLIST:
+      return {
+        ...state,
+        userInfoList: action.payload || []
       }
     default:
        return state

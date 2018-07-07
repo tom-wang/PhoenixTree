@@ -1,16 +1,15 @@
+<import src="../../components/avatar/index.wxml" />
 <block>
-    <block wx:if="{{isLoading}}">
-        <view></view>
-    </block>
-    <block wx:elif="{{isNotAuth}}">
+    <view wx:if="{{isLoading}}"></view>
+    <view wx:elif="{{isNotAuth}}">
         <view>
-            <view>
-                <button open-type="getUserInfo" size="mini" on-get-user-info="{{onGetUserInfo.bind(this)}}">进入新世界</button>
-            </view>
+            <button open-type="getUserInfo" size="mini" bindgetuserinfo="onGetUserInfo"
+            data-event-onGetUserInfo-scope="this" data-component-path="{{$path}}">进入新世界</button>
         </view>
-    </block>
+    </view>
     <view wx:else>
         <view>
+            <template is="Avatar" data="{{...$$Avatar}}"></template>
             <button size="mini" bindtap="onClick" data-event-onClick-scope="this"
             data-component-path="{{$path}}">打开新页面</button>
         </view>

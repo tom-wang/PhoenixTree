@@ -1,4 +1,4 @@
-import { SET_CODE, SET_USERINFO, SET_REGINFO } from '../constants/session'
+import { SET_CODE, SET_USERINFO, SET_REGINFO, SET_USERINFOLIST } from '../constants/session'
 
 export function setCode(code) {
     return {
@@ -18,5 +18,12 @@ export function setRegInfo(info) {
     return {
         type: SET_REGINFO,
         payload: info
+    }
+}
+
+export function setUserInfoList(list) {
+    return {
+        type: SET_USERINFOLIST,
+        payload: list
     }
 }
