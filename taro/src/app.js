@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
 import configStore from './store'
 import Index from './pages/index'
-import { setCode, setUserInfo } from './actions/session'
+import { setCode, setUserInfo, setRegInfo } from './actions/session'
 
 import './app.scss'
 
@@ -39,7 +39,7 @@ class App extends Component {
     this.login().then(() => {
       wx.cloud.init();
       this.getCurrentUserInfo();
-      this.getUserInfoList();
+      this.getUserRegInfo();
     }).catch(() => {
       console.log(arguments);
       console.log('catch');
@@ -99,22 +99,34 @@ class App extends Component {
     })
   }
 
-  getUserInfoList() {
+  getUserRegInfo() {
     //调用云函数
-    wx.cloud.callFunction({
+    return wx.cloud.callFunction({
       // 需调用的云函数名
       name: 'add',
       // 传给云函数的参数
       data: {
         a: 12,
         b: 19,
-      },
-      // 成功回调
-      complete: console.log
+      }
+    }).then(result => {
+      console.log(result);
+      //调用云DB
+      const { openId } = result.result;
+      const db = wx.cloud.database()
+      const member_info = db.collection('member_info')
+      return member_info.where({
+        _openid: 'ow7kc0crTq1IEGlBGhcpZRZNyaeI'
+      }).get().then(result => {
+        console.log(result);
+        store.dispatch(setRegInfo({
+          ...result.data[0],
+          openId
+        }))
+      })
     });
     //调用云DB
-    const db = wx.cloud.database()
-    const member_info = db.collection('member_info')
+    
     /*
     添加
     member_info.add({

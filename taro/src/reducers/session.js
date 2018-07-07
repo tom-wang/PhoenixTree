@@ -1,4 +1,4 @@
-import { SET_CODE, SET_USERINFO } from '../constants/session'
+import { SET_CODE, SET_USERINFO, SET_REGINFO } from '../constants/session'
 
 const INITIAL_STATE = {
   code: '',
@@ -16,6 +16,11 @@ export default function session (state = INITIAL_STATE, action) {
       return {
         ...state,
         userInfo: action.payload
+      }
+    case SET_REGINFO:
+      return {
+        ...state,
+        regInfo: action.payload
       }
     default:
        return state
