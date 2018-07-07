@@ -1,4 +1,3 @@
-<import src="../../components/avatar/index.wxml" />
 <block>
     <block wx:if="{{isLoading}}">
         <view></view>
@@ -12,8 +11,6 @@
     </block>
     <view wx:else>
         <view>
-            <template is="Avatar" data="{{...item}}" wx:for-item="item" wx:for="{{$$Avatar}}"
-            wx:key="{{69953303}}"></template>
             <button size="mini" bindtap="onClick" data-event-onClick-scope="this"
             data-component-path="{{$path}}">打开新页面</button>
         </view>

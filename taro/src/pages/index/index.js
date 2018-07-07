@@ -68,12 +68,17 @@ export default class Index extends Component {
       wx.showLoading({
         title: '拼命加载中...'
       });
-      wx.hideTabBar();
     } else {
       wx.hideLoading();
       wx.showTabBar();
     }
+    // userInfo值为-1表示用户没有授权使用个人信息
     let isNotAuth = -1 === userInfo;
+    if(isNotAuth || isLoading) {
+      wx.hideTabBar();
+    } else {
+      wx.showTabBar();
+    }
     
     if(isLoading) {
       return null;
@@ -93,7 +98,6 @@ export default class Index extends Component {
     return (
       <View>
         <View>
-          <Avatar src={userInfo.avatarUrl} />
           <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
         </View>
       </View>

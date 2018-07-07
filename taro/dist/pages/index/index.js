@@ -66,30 +66,9 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
-    _this.$usedState = ["isLoading", "isNotAuth", "$$Avatar"];
-    _this.$components = {
-      Avatar: _index5.default
-    };
-    _this.$dynamicComponents = {
-      $b67cf65c: function $b67cf65c() {
-        var nodes = [{
-          name: "Avatar",
-          path: _index5.default,
-          subscript: "",
-
-          args: function args() {
-            return {
-              src: (0, _index.internal_safe_get)(__item, "userInfo.avatarUrl"),
-              $path: "$b67cf65c"
-            };
-          }
-        }];
-        return {
-          stateName: "$$Avatar",
-          loopComponents: (0, _index.internal_dynamic_recursive)(_this, nodes, (0, _index.internal_safe_get)(_this.state, "$$Avatar"), "$b67cf65c")
-        };
-      }
-    };
+    _this.$usedState = ["isLoading", "isNotAuth"];
+    _this.$components = {};
+    _this.$dynamicComponents = {};
     return _this;
   }
 
@@ -142,12 +121,17 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           wx.showLoading({
             title: '拼命加载中...'
           });
-          wx.hideTabBar();
         } else {
           wx.hideLoading();
           wx.showTabBar();
         }
+        // userInfo值为-1表示用户没有授权使用个人信息
         var isNotAuth = -1 === userInfo;
+        if (isNotAuth || isLoading) {
+          wx.hideTabBar();
+        } else {
+          wx.showTabBar();
+        }
 
         if (isLoading) {}
 
@@ -183,11 +167,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
         Object.assign(this.__state, {
           isLoading: isLoading,
-          isNotAuth: isNotAuth,
-          $$Avatar: [{
-            $path: "$b67cf65c_0",
-            src: userInfo.avatarUrl
-          }]
+          isNotAuth: isNotAuth
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;
