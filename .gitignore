@@ -48,3 +48,4 @@ sdk.config.json
 client/config.js
 server/config.local.js
 server/config.js
+taro/dist/
