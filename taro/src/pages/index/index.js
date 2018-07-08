@@ -3,6 +3,7 @@ import { View, Text, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
 import Avatar from '../../components/avatar/index'
+import List from '../../components/list/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { setUserInfo, setUserInfoList } from '../../actions/session'
@@ -34,6 +35,12 @@ export default class Index extends Component {
   }
 
   componentWillMount() {
+  }
+
+  onShareAppMessage() {
+    return {
+      title: '同学，有空来喝一杯！'
+    }
   }
 
   fetchUserInfoList() {
@@ -105,6 +112,11 @@ export default class Index extends Component {
       <View>
         <View>
           <Avatar src={userInfo.avatarUrl} />
+          { (userInfoList || []).map(item => {
+            item.title = item.nickName;
+            item.src = item.avatarUrl;
+            return <List title={item.title} src={item.src} />
+          }) }
           <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
         </View>
       </View>

@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _dec, _class;
@@ -17,6 +19,10 @@ var _index3 = require("../../npm/@tarojs/redux/index.js");
 var _index4 = require("../../components/avatar/index.js");
 
 var _index5 = _interopRequireDefault(_index4);
+
+var _index6 = require("../../components/list/index.js");
+
+var _index7 = _interopRequireDefault(_index6);
 
 var _counter = require("../../actions/counter.js");
 
@@ -69,7 +75,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
-    _this.$usedState = ["userInfo", "isLoading", "isNotAuth", "$$Avatar"];
+    _this.$usedState = ["userInfo", "loopArray0", "isLoading", "isNotAuth", "userInfoList", "$$Avatar"];
     _this.$props = {
       Avatar: function Avatar() {
         return {
@@ -81,6 +87,27 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     _this.$components = {
       Avatar: _index5.default
     };
+    _this.$dynamicComponents = {
+      $component_16: function $component_16() {
+        var stateName = "loopArray0";
+        var nodes = [{
+          name: "List",
+          path: _index7.default,
+          subscript: "",
+
+          args: function args(__item, index) {
+            return {
+              title: __item.title,
+              src: __item.src
+            };
+          }
+        }];
+        return {
+          stateName: stateName,
+          loopComponents: (0, _index.internal_dynamic_recursive)(_this, nodes, (0, _index.internal_safe_get)(_this.state, stateName), stateName)
+        };
+      }
+    };
 
     _this.state = _this._createData();
     return _this;
@@ -89,6 +116,13 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
   _createClass(Index, [{
     key: "componentWillMount",
     value: function componentWillMount() {}
+  }, {
+    key: "onShareAppMessage",
+    value: function onShareAppMessage() {
+      return {
+        title: '同学，有空来喝一杯！'
+      };
+    }
   }, {
     key: "fetchUserInfoList",
     value: function fetchUserInfoList() {
@@ -156,6 +190,8 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
         if (isLoading) {}
 
+        if (isNotAuth) {}
+
         /*
         return -1 === userInfo ? <View>
           <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
@@ -184,12 +220,17 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           </View>
         )
         */
-        if (isNotAuth) {}
-
+        var loopArray0 = (userInfoList || []).map(function (item) {
+          item.title = item.nickName;
+          item.src = item.avatarUrl;
+          return _extends({}, item);
+        });
         Object.assign(this.__state, {
           userInfo: userInfo,
+          loopArray0: loopArray0,
           isLoading: isLoading,
-          isNotAuth: isNotAuth
+          isNotAuth: isNotAuth,
+          userInfoList: userInfoList
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;
