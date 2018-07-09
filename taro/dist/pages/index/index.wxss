@@ -1,5 +1,6 @@
 @import "../../components/avatar/index.wxss";
 @import "../../components/list/index.wxss";
+@import "../../components/loadmore/index.wxss";
 .avatar {
   display: block;
   width: 120rpx;

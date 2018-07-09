@@ -1,5 +1,6 @@
 <import src="../../components/avatar/index.wxml" />
 <import src="../../components/list/index.wxml" />
+<import src="../../components/loadmore/index.wxml" />
 <block>
     <view wx:if="{{isLoading}}"></view>
     <view wx:elif="{{isNotAuth}}">
@@ -13,6 +14,7 @@
             <template is="Avatar" data="{{...$$Avatar}}"></template>
             <template is="List" data="{{...item}}" wx:for="{{loopArray0}}"
             wx:for-item="item"></template>
+            <template is="LoadMore" data="{{...$$LoadMore}}"></template>
             <button size="mini" bindtap="onClick" data-event-onClick-scope="this"
             data-component-path="{{$path}}">打开新页面</button>
         </view>
