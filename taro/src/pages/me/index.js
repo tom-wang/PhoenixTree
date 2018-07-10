@@ -3,6 +3,7 @@ import { View, Text, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
 import Avatar from '../../components/avatar/index'
+import InputComponent from '../../components/inputComponent/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { setUserInfo } from '../../actions/session'
@@ -35,12 +36,28 @@ export default class Index extends Component {
   }
 
   render () {
-    const { userInfo } = this.props.session;
-    return -1 === userInfo ? <View>
-      <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
-    </View> : <View>
-      <Avatar count="7" src={userInfo.avatarUrl} />
-    </View>;
+    const { userInfo, regInfo } = this.props.session;
+    const genderConst = ['未知', '男', '女'];
+    let chineseName = regInfo.chineseName || '';
+    let gender = genderConst[regInfo.gender || userInfo.gender];
+    let city = regInfo.city || userInfo.city || '未知';
+    let tel = regInfo.tel || '';
+    return (
+      <View className="container">
+        <View>
+          <Avatar src={userInfo.avatarUrl} />
+        </View>
+        <View className="input-wrap">
+          <InputComponent type="text" title="姓名" placeholder="中文全名" value={chineseName}></InputComponent>
+          <InputComponent type="text" title="性别" placeholder="性别" value={gender}></InputComponent>
+          <InputComponent type="text" title="城市" placeholder="常住地城市" value={city}></InputComponent>
+          <InputComponent type="number" title="手机" placeholder="请输入手机号" value={tel}
+          src="https://s10.mogucdn.com/mlcdn/c45406/171025_7abllhkc011ka5kici7532af6202g_28x40.png"
+          maxlength="11"
+          ></InputComponent>
+        </View>
+      </View>
+    )
     /*return (
       <View className='todo'>
         <button open-type="getUserInfo">授权</button>

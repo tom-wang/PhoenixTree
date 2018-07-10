@@ -18,6 +18,10 @@ var _index4 = require("../../components/avatar/index.js");
 
 var _index5 = _interopRequireDefault(_index4);
 
+var _index6 = require("../../components/inputComponent/index.js");
+
+var _index7 = _interopRequireDefault(_index6);
+
 var _counter = require("../../actions/counter.js");
 
 var _session = require("../../actions/session.js");
@@ -60,18 +64,59 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
-    _this.$usedState = ["userInfo", "$$Avatar"];
+    _this.$usedState = ["userInfo", "chineseName", "gender", "city", "tel", "$$Avatar", "$$InputComponent", "$$InputComponent_1", "$$InputComponent_2", "$$InputComponent_3"];
     _this.$props = {
       Avatar: function Avatar() {
         return {
           $name: "Avatar",
-          count: "7",
           src: (0, _index.internal_safe_get)(this.state, "userInfo.avatarUrl")
+        };
+      },
+      InputComponent: function InputComponent() {
+        return {
+          $name: "InputComponent",
+          type: "text",
+          title: "\u59D3\u540D",
+          placeholder: "\u4E2D\u6587\u5168\u540D",
+          value: this.state.chineseName
+        };
+      },
+      InputComponent_1: function InputComponent_1() {
+        return {
+          $name: "InputComponent_1",
+          type: "text",
+          title: "\u6027\u522B",
+          placeholder: "\u6027\u522B",
+          value: this.state.gender
+        };
+      },
+      InputComponent_2: function InputComponent_2() {
+        return {
+          $name: "InputComponent_2",
+          type: "text",
+          title: "\u57CE\u5E02",
+          placeholder: "\u5E38\u4F4F\u5730\u57CE\u5E02",
+          value: this.state.city
+        };
+      },
+      InputComponent_3: function InputComponent_3() {
+        return {
+          $name: "InputComponent_3",
+          type: "number",
+          title: "\u624B\u673A",
+          placeholder: "\u8BF7\u8F93\u5165\u624B\u673A\u53F7",
+          value: this.state.tel,
+          src: "https://s10.mogucdn.com/mlcdn/c45406/171025_7abllhkc011ka5kici7532af6202g_28x40.png",
+          maxlength: "11"
         };
       }
     };
     _this.$components = {
-      Avatar: _index5.default
+      Avatar: _index5.default,
+      InputComponent: _index7.default,
+      InputComponent_1: _index7.default,
+      InputComponent_2: _index7.default,
+      InputComponent_3: _index7.default
     };
 
     _this.state = _this._createData();
@@ -79,8 +124,8 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
   }
 
   _createClass(Index, [{
-    key: "__event_onGetUserInfo",
-    value: function __event_onGetUserInfo(e) {
+    key: "onGetUserInfo",
+    value: function onGetUserInfo(e) {
       console.log(e.detail.userInfo);
       this.props.setUserInfo(e.detail.userInfo);
     }
@@ -90,6 +135,15 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
       this.__state = arguments[0] || this.state || {};
       this.__props = arguments[1] || this.props || {};
       {
+        var _props$session = this.__props.session,
+            userInfo = _props$session.userInfo,
+            regInfo = _props$session.regInfo;
+
+        var genderConst = ['未知', '男', '女'];
+        var chineseName = regInfo.chineseName || '';
+        var gender = genderConst[regInfo.gender || userInfo.gender];
+        var city = regInfo.city || userInfo.city || '未知';
+
         /*return (
           <View className='todo'>
             <button open-type="getUserInfo">授权</button>
@@ -110,10 +164,13 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           </View>
         )
         */
-        var userInfo = this.__props.session.userInfo;
-
+        var tel = regInfo.tel || '';
         Object.assign(this.__state, {
-          userInfo: userInfo
+          userInfo: userInfo,
+          chineseName: chineseName,
+          gender: gender,
+          city: city,
+          tel: tel
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;

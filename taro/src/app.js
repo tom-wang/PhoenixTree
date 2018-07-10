@@ -55,6 +55,7 @@ class App extends Component {
   // getUserInfo需要授权
   getCurrentUserInfo() {
     wx.getUserInfo({
+      lang: 'zh_CN',
       withCredentials: true,
       success(res) {
         store.dispatch(setUserInfo(res.userInfo))

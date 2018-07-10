@@ -5,9 +5,6 @@ import './index.scss'
 
 let _config = {}
 _config.TYPES = [{
-    icon: 'https://s10.mogucdn.com/p2/161213/upload_57bl76e9010115f3fj1d2k1kj5l4b_44x44.png',
-    text: '再看点别的？'
-}, {
     icon: 'https://s10.mogucdn.com/p2/161213/upload_6c4a17j86gb0lh9hba01i464fkie2_44x44.png',
     text: '哎呀都看完了'
 }, {
@@ -43,12 +40,6 @@ export default class LoadMore extends Component {
             iconStatus: _config.IconType.HIDDEN,
             iconType: _config.IconType
         };
-    }
-    
-    onClick(event) {
-        var detail = event.detail;
-        var option = {};
-        console.log(detail);
     }
 
     render() {

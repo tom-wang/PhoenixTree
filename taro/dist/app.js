@@ -66,6 +66,7 @@ var _App = function (_Component) {
     key: "getCurrentUserInfo",
     value: function getCurrentUserInfo() {
       wx.getUserInfo({
+        lang: 'zh_CN',
         withCredentials: true,
         success: function success(res) {
           store.dispatch((0, _session.setUserInfo)(res.userInfo));

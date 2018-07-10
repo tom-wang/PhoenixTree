@@ -5,6 +5,7 @@ import './index.scss'
 import Avatar from '../../components/avatar/index'
 import List from '../../components/list/index'
 import LoadMore from '../../components/loadmore/index'
+import InputComponent from '../../components/inputComponent/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { setUserInfo, setUserInfoList } from '../../actions/session'
@@ -119,8 +120,10 @@ export default class Index extends Component {
             return <List title={item.title} src={item.src} />
           }) }
           <LoadMore isEnd={true} />
+          <InputComponent />
           <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
         </View>
+        
       </View>
     )
     

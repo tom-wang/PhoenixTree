@@ -16,6 +16,7 @@
   "dependencies": {
     "@minui/wxc-avatar": "^1.0.5",
     "@minui/wxc-icon": "^1.0.9",
+    "@minui/wxc-input": "^1.0.2",
     "@minui/wxc-list": "^1.0.1",
     "@minui/wxc-loadmore": "^1.0.5",
     "@tarojs/components": "^0.0.63",
