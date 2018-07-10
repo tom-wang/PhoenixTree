@@ -1,12 +1,14 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Text, Button } from '@tarojs/components'
+import { View, Text, Button, Switch } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
+import './btn.scss'
 import Avatar from '../../components/avatar/index'
 import InputComponent from '../../components/inputComponent/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { setUserInfo } from '../../actions/session'
+import { toast, error } from '../../utils/index'
 
 @connect(({ counter, session }) => ({
   counter,
@@ -30,53 +32,175 @@ export default class Index extends Component {
     navigationBarTitleText: '梧桐树下Plus'
   }
 
-  onGetUserInfo(e) {
-    console.log(e.detail.userInfo)
-    this.props.setUserInfo(e.detail.userInfo)
+  constructor(props) {
+    //页面constructor执行是比较早的，不能依赖这里的props来设置state
+    super(props);
+    this.state = {
+      chineseName: '',
+      gender: '',
+      city: '',
+      tel: '',
+      authorized: 1
+    }
+  }
+
+  componentWillMount() {
+    const { userInfo, regInfo } = this.props.session;
+    const genderConst = ['', '男', '女'];
+    let chineseName  = regInfo.chineseName || '';
+    let gender  = genderConst[regInfo.gender || userInfo.gender];
+    let city  = regInfo.city || userInfo.city || '';
+    let tel  = regInfo.tel || '';
+    let authorized = regInfo.authorized || 1;
+    this.setState({
+      chineseName,
+      gender,
+      city,
+      tel,
+      authorized
+    })
+  }
+
+  onSubmit() {
+    let { hasReg } = this.props.session;
+    if(!this.checkInfo()) return;
+    if(hasReg) {
+      this.updateInfo();
+    } else {
+      this.addInfo();
+    }
+  }
+
+  checkInfo() {
+    let {
+      chineseName,
+      gender,
+      city,
+      tel,
+      authorized
+    } = this.state;
+    if(!chineseName) {
+      error('缺少姓名');
+      return false;
+    }
+    if(-1 == ['男', '女'].indexOf(gender)) {
+      error('错误的性别');
+      return false;
+    }
+    if(!city) {
+      error('缺少城市');
+      return false;
+    }
+    if(!/^1(3|4|5|7|8)\d{9}$/.test(tel)) {
+      error('错误的手机号');
+      return false;
+    }
+    return true;
+  }
+
+  addInfo() {
+    let {
+      chineseName,
+      gender,
+      city,
+      tel,
+      authorized
+    } = this.state;
+    let { regInfo, userInfo } = this.props.session;
+    let data = {
+      ...userInfo,
+      chineseName,
+      gender,
+      city,
+      tel,
+      authorized,
+      insertTime: Date.now(),
+      updateTime: Date.now()
+    }
+    this.insertOrUpdateDB(data);
+  }
+
+  insertOrUpdateDB() {
+    const db = wx.cloud.database()
+    const member_info = db.collection('member_info')
+    return member_info.where({
+      _openid: openId
+    }).get().then(result => {
+      console.log(result);
+      store.dispatch(setHasReg(!!result.data.length))
+      store.dispatch(setRegInfo({
+        ...result.data[0],
+        openId
+      }))
+    })
+  }
+
+  updateInfo() {
+    let {
+      chineseName,
+      gender,
+      city,
+      tel,
+      authorized
+    } = this.state;
+    let { regInfo, userInfo } = this.props.session;
+    let data = {
+      ...regInfo, 
+      ...userInfo,
+      chineseName,
+      gender,
+      city,
+      tel,
+      authorized,
+      updateTime: Date.now()
+    }
+    this.insertOrUpdateDB(data);
+  }
+
+  onChange(event) {
+    console.log(event);
+    this.state.authorized = event.detail.value ? 1 : 0;
+  }
+
+  onInput(dataType, event) {
+    console.log(dataType, event);
+    this.state[dataType] = event.detail.value;
+    /*
+    this.setState({
+      [dataType]: event.detail.value
+    });
+    */
   }
 
   render () {
-    const { userInfo, regInfo } = this.props.session;
-    const genderConst = ['未知', '男', '女'];
-    let chineseName = regInfo.chineseName || '';
-    let gender = genderConst[regInfo.gender || userInfo.gender];
-    let city = regInfo.city || userInfo.city || '未知';
-    let tel = regInfo.tel || '';
+    const { userInfo } = this.props.session;
+    const { chineseName, gender, city, tel, authorized } = this.state;
     return (
       <View className="container">
-        <View>
+        <View className="avatar-container">
           <Avatar src={userInfo.avatarUrl} />
         </View>
+        <View className="nickname-container">{userInfo.nickName}</View>
         <View className="input-wrap">
-          <InputComponent type="text" title="姓名" placeholder="中文全名" value={chineseName}></InputComponent>
-          <InputComponent type="text" title="性别" placeholder="性别" value={gender}></InputComponent>
-          <InputComponent type="text" title="城市" placeholder="常住地城市" value={city}></InputComponent>
+          <InputComponent type="text" title="姓名" placeholder="中文全名" value={chineseName} onInput={this.onInput.bind(this, 'chineseName')}></InputComponent>
+          <InputComponent type="text" title="性别" placeholder="性别" value={gender} onInput={this.onInput.bind(this, 'gender')}></InputComponent>
+          <InputComponent type="text" title="城市" placeholder="常住地城市" value={city} onInput={this.onInput.bind(this, 'city')}></InputComponent>
           <InputComponent type="number" title="手机" placeholder="请输入手机号" value={tel}
+          onInput={this.onInput.bind(this, 'tel')}
           src="https://s10.mogucdn.com/mlcdn/c45406/171025_7abllhkc011ka5kici7532af6202g_28x40.png"
           maxlength="11"
           ></InputComponent>
+          <View className="input">
+            <View className="input__combine input__normal">
+              <View className="input__label">公开我的信息</View>
+              <Switch type="switch" checked={authorized?true:false} color="#13227a" onChange={this.onChange.bind(this)}></Switch>
+            </View>
+          </View>
+        </View>
+        <View className="btn-container">
+          <Button className="btn btn__size--large" onClick={this.onSubmit.bind(this)}>提交</Button>
         </View>
       </View>
     )
-    /*return (
-      <View className='todo'>
-        <button open-type="getUserInfo">授权</button>
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Button className='add_btn' onClick={this.props.add}>+</Button>
-        <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-        <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-        <View>{this.props.counter.num}</View>
-      </View>
-    )
-    */
   }
 }

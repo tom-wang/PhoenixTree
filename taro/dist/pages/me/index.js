@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _dec, _class;
@@ -25,6 +27,8 @@ var _index7 = _interopRequireDefault(_index6);
 var _counter = require("../../actions/counter.js");
 
 var _session = require("../../actions/session.js");
+
+var _index8 = require("../../utils/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63,8 +67,10 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     _classCallCheck(this, Index);
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
+    //页面constructor执行是比较早的，不能依赖这里的props来设置state
 
-    _this.$usedState = ["userInfo", "chineseName", "gender", "city", "tel", "$$Avatar", "$$InputComponent", "$$InputComponent_1", "$$InputComponent_2", "$$InputComponent_3"];
+
+    _this.$usedState = ["userInfo", "chineseName", "gender", "city", "tel", "authorized", "$$Avatar", "$$InputComponent", "$$InputComponent_1", "$$InputComponent_2", "$$InputComponent_3"];
     _this.$props = {
       Avatar: function Avatar() {
         return {
@@ -78,7 +84,8 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           type: "text",
           title: "\u59D3\u540D",
           placeholder: "\u4E2D\u6587\u5168\u540D",
-          value: this.state.chineseName
+          value: this.state.chineseName,
+          onInput: this.onInput.bind(this, 'chineseName')
         };
       },
       InputComponent_1: function InputComponent_1() {
@@ -87,7 +94,8 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           type: "text",
           title: "\u6027\u522B",
           placeholder: "\u6027\u522B",
-          value: this.state.gender
+          value: this.state.gender,
+          onInput: this.onInput.bind(this, 'gender')
         };
       },
       InputComponent_2: function InputComponent_2() {
@@ -96,7 +104,8 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           type: "text",
           title: "\u57CE\u5E02",
           placeholder: "\u5E38\u4F4F\u5730\u57CE\u5E02",
-          value: this.state.city
+          value: this.state.city,
+          onInput: this.onInput.bind(this, 'city')
         };
       },
       InputComponent_3: function InputComponent_3() {
@@ -106,6 +115,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           title: "\u624B\u673A",
           placeholder: "\u8BF7\u8F93\u5165\u624B\u673A\u53F7",
           value: this.state.tel,
+          onInput: this.onInput.bind(this, 'tel'),
           src: "https://s10.mogucdn.com/mlcdn/c45406/171025_7abllhkc011ka5kici7532af6202g_28x40.png",
           maxlength: "11"
         };
@@ -119,15 +129,156 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
       InputComponent_3: _index7.default
     };
 
+    _this.state = {
+      chineseName: '',
+      gender: '',
+      city: '',
+      tel: '',
+      authorized: 1
+    };
     _this.state = _this._createData();
     return _this;
   }
 
   _createClass(Index, [{
-    key: "onGetUserInfo",
-    value: function onGetUserInfo(e) {
-      console.log(e.detail.userInfo);
-      this.props.setUserInfo(e.detail.userInfo);
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      var _props$session = this.props.session,
+          userInfo = _props$session.userInfo,
+          regInfo = _props$session.regInfo;
+
+      var genderConst = ['', '男', '女'];
+      var chineseName = regInfo.chineseName || '';
+      var gender = genderConst[regInfo.gender || userInfo.gender];
+      var city = regInfo.city || userInfo.city || '';
+      var tel = regInfo.tel || '';
+      var authorized = regInfo.authorized || 1;
+      this.setState({
+        chineseName: chineseName,
+        gender: gender,
+        city: city,
+        tel: tel,
+        authorized: authorized
+      });
+    }
+  }, {
+    key: "__event_onSubmit",
+    value: function __event_onSubmit() {
+      var hasReg = this.props.session.hasReg;
+
+      if (!this.checkInfo()) return;
+      if (hasReg) {
+        this.updateInfo();
+      } else {
+        this.addInfo();
+      }
+    }
+  }, {
+    key: "checkInfo",
+    value: function checkInfo() {
+      var _state = this.state,
+          chineseName = _state.chineseName,
+          gender = _state.gender,
+          city = _state.city,
+          tel = _state.tel,
+          authorized = _state.authorized;
+
+      if (!chineseName) {
+        (0, _index8.error)('缺少姓名');
+        return false;
+      }
+      if (-1 == ['男', '女'].indexOf(gender)) {
+        (0, _index8.error)('错误的性别');
+        return false;
+      }
+      if (!city) {
+        (0, _index8.error)('缺少城市');
+        return false;
+      }
+      if (!/^1(3|4|5|7|8)\d{9}$/.test(tel)) {
+        (0, _index8.error)('错误的手机号');
+        return false;
+      }
+      return true;
+    }
+  }, {
+    key: "addInfo",
+    value: function addInfo() {
+      var _state2 = this.state,
+          chineseName = _state2.chineseName,
+          gender = _state2.gender,
+          city = _state2.city,
+          tel = _state2.tel,
+          authorized = _state2.authorized;
+      var _props$session2 = this.props.session,
+          regInfo = _props$session2.regInfo,
+          userInfo = _props$session2.userInfo;
+
+      var data = _extends({}, userInfo, {
+        chineseName: chineseName,
+        gender: gender,
+        city: city,
+        tel: tel,
+        authorized: authorized,
+        insertTime: Date.now(),
+        updateTime: Date.now()
+      });
+      this.insertOrUpdateDB(data);
+    }
+  }, {
+    key: "insertOrUpdateDB",
+    value: function insertOrUpdateDB() {
+      var db = wx.cloud.database();
+      var member_info = db.collection('member_info');
+      return member_info.where({
+        _openid: openId
+      }).get().then(function (result) {
+        console.log(result);
+        store.dispatch(setHasReg(!!result.data.length));
+        store.dispatch(setRegInfo(_extends({}, result.data[0], {
+          openId: openId
+        })));
+      });
+    }
+  }, {
+    key: "updateInfo",
+    value: function updateInfo() {
+      var _state3 = this.state,
+          chineseName = _state3.chineseName,
+          gender = _state3.gender,
+          city = _state3.city,
+          tel = _state3.tel,
+          authorized = _state3.authorized;
+      var _props$session3 = this.props.session,
+          regInfo = _props$session3.regInfo,
+          userInfo = _props$session3.userInfo;
+
+      var data = _extends({}, regInfo, userInfo, {
+        chineseName: chineseName,
+        gender: gender,
+        city: city,
+        tel: tel,
+        authorized: authorized,
+        updateTime: Date.now()
+      });
+      this.insertOrUpdateDB(data);
+    }
+  }, {
+    key: "__event_onChange",
+    value: function __event_onChange(event) {
+      console.log(event);
+      this.state.authorized = event.detail.value ? 1 : 0;
+    }
+  }, {
+    key: "onInput",
+    value: function onInput(dataType, event) {
+      console.log(dataType, event);
+      this.state[dataType] = event.detail.value;
+      /*
+      this.setState({
+        [dataType]: event.detail.value
+      });
+      */
     }
   }, {
     key: "_createData",
@@ -135,42 +286,16 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
       this.__state = arguments[0] || this.state || {};
       this.__props = arguments[1] || this.props || {};
       {
-        var _props$session = this.__props.session,
-            userInfo = _props$session.userInfo,
-            regInfo = _props$session.regInfo;
+        var userInfo = this.__props.session.userInfo;
+        var _state4 = this.__state,
+            chineseName = _state4.chineseName,
+            gender = _state4.gender,
+            city = _state4.city,
+            tel = _state4.tel,
+            authorized = _state4.authorized;
 
-        var genderConst = ['未知', '男', '女'];
-        var chineseName = regInfo.chineseName || '';
-        var gender = genderConst[regInfo.gender || userInfo.gender];
-        var city = regInfo.city || userInfo.city || '未知';
-
-        /*return (
-          <View className='todo'>
-            <button open-type="getUserInfo">授权</button>
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Button className='add_btn' onClick={this.props.add}>+</Button>
-            <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-            <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-            <View>{this.props.counter.num}</View>
-          </View>
-        )
-        */
-        var tel = regInfo.tel || '';
         Object.assign(this.__state, {
-          userInfo: userInfo,
-          chineseName: chineseName,
-          gender: gender,
-          city: city,
-          tel: tel
+          userInfo: userInfo
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;

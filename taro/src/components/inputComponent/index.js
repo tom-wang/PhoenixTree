@@ -29,9 +29,7 @@ export default class InputComponent extends Component {
     }
 
     onInput(event) {
-        var detail = event.detail;
-        var option = {};
-        console.log(event);
+        this.props.onInput && this.props.onInput(event);
     }
 
     onFocus(event) {

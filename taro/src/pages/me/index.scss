@@ -9,3 +9,17 @@
   .input-wrap {
     background: #fff;
   }
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 60rpx;
+}
+
+.nickname-container {
+  color: #13227a;
+  text-align: center;
+  font-size: 32rpx;
+  margin-top: 10rpx;
+  margin-bottom: 50rpx;
+}

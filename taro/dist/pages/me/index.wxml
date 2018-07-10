@@ -2,14 +2,27 @@
 <import src="../../components/inputComponent/index.wxml" />
 <block>
     <view class="container">
-        <view>
+        <view class="avatar-container">
             <template is="Avatar" data="{{...$$Avatar}}"></template>
         </view>
+        <view class="nickname-container">{{userInfo.nickName}}</view>
         <view class="input-wrap">
             <template is="InputComponent" data="{{...$$InputComponent}}"></template>
             <template is="InputComponent" data="{{...$$InputComponent_1}}"></template>
             <template is="InputComponent" data="{{...$$InputComponent_2}}"></template>
             <template is="InputComponent" data="{{...$$InputComponent_3}}"></template>
+            <view class="input">
+                <view class="input__combine input__normal">
+                    <view class="input__label">公开我的信息</view>
+                    <switch type="switch" checked="{{authorized ? true : false}}"
+                    color="#13227a" bindchange="onChange" data-event-onChange-scope="this"
+                    data-component-path="{{$path}}"></switch>
+                </view>
+            </view>
+        </view>
+        <view class="btn-container">
+            <button class="btn btn__size--large" bindtap="onSubmit" data-event-onSubmit-scope="this"
+            data-component-path="{{$path}}">提交</button>
         </view>
     </view>
 </block>

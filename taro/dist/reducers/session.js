@@ -12,13 +12,12 @@ var _session = require("../constants/session.js");
 
 var INITIAL_STATE = {
   code: '',
-  userInfo: {
-    loading: true
-  }, //-1表示getUserInfo返回错误，需要展示授权按钮
-  regInfo: {
-    loading: true
-  },
-  userInfoList: false
+  userInfoLoading: true,
+  userInfo: false, //-1表示getUserInfo返回错误，需要展示授权按钮
+  regInfoLoading: true,
+  regInfo: false,
+  userInfoList: false,
+  hasReg: false //标识用户是否注册
 };
 
 function session() {
@@ -41,6 +40,18 @@ function session() {
     case _session.SET_USERINFOLIST:
       return _extends({}, state, {
         userInfoList: action.payload || []
+      });
+    case _session.SET_HASREG:
+      return _extends({}, state, {
+        hasReg: action.payload
+      });
+    case _session.SET_REGINFOLOADING:
+      return _extends({}, state, {
+        regInfoLoading: action.payload
+      });
+    case _session.SET_USERINFOLOADING:
+      return _extends({}, state, {
+        userInfoLoading: action.payload
       });
     default:
       return state;

@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
 import configStore from './store'
 import Index from './pages/index'
-import { setCode, setUserInfo, setRegInfo } from './actions/session'
+import { setCode, setUserInfo, setRegInfo, setHasReg, setRegInfoLoading, setUserInfoLoading } from './actions/session'
 
 import './app.scss'
 
@@ -59,10 +59,12 @@ class App extends Component {
       withCredentials: true,
       success(res) {
         store.dispatch(setUserInfo(res.userInfo))
+        store.dispatch(setUserInfoLoading(false))
         console.log(res)
       },
       fail(res) {
         store.dispatch(setUserInfo(-1))
+        store.dispatch(setUserInfoLoading(false))
         console.log(res)
       }
     });
@@ -126,10 +128,14 @@ class App extends Component {
         _openid: openId
       }).get().then(result => {
         console.log(result);
+        store.dispatch(setHasReg(!!result.data.length))
+        store.dispatch(setRegInfoLoading(false))
         store.dispatch(setRegInfo({
           ...result.data[0],
           openId
         }))
+      }).catch(() => {
+        store.dispatch(setRegInfoLoading(false))
       })
     });
     //调用云DB

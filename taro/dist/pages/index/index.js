@@ -109,7 +109,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
       InputComponent: _index11.default
     };
     _this.$dynamicComponents = {
-      $component_5: function $component_5() {
+      $component_1: function $component_1() {
         var stateName = "loopArray0";
         var nodes = [{
           name: "List",
@@ -185,21 +185,22 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
         var _props$session = this.__props.session,
             userInfo = _props$session.userInfo,
             regInfo = _props$session.regInfo,
-            userInfoList = _props$session.userInfoList;
+            userInfoList = _props$session.userInfoList,
+            userInfoLoading = _props$session.userInfoLoading,
+            regInfoLoading = _props$session.regInfoLoading;
         // 如果授权通过了并且没有拉取过成员列表，则拉取成员列表
 
         if (Const.REG_STATUS_2 == regInfo.state && !userInfoList) {
           this.fetchUserInfoList();
         }
         //isLoading必须是布尔值
-        var isLoading = !!(userInfo.loading || regInfo.loading);
+        var isLoading = !!(userInfoLoading || regInfoLoading);
         if (isLoading) {
           wx.showLoading({
             title: '拼命加载中...'
           });
         } else {
           wx.hideLoading();
-          wx.showTabBar();
         }
         // userInfo值为-1表示用户没有授权使用个人信息
         var isNotAuth = -1 === userInfo;

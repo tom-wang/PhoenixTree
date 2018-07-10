@@ -73,20 +73,19 @@ export default class Index extends Component {
   }
 
   render () {
-    const { userInfo, regInfo, userInfoList } = this.props.session;
+    const { userInfo, regInfo, userInfoList, userInfoLoading, regInfoLoading } = this.props.session;
     // 如果授权通过了并且没有拉取过成员列表，则拉取成员列表
     if(Const.REG_STATUS_2 == regInfo.state && !userInfoList) {
       this.fetchUserInfoList();
     }
     //isLoading必须是布尔值
-    let isLoading = !!(userInfo.loading || regInfo.loading);
+    let isLoading = !!(userInfoLoading || regInfoLoading);
     if(isLoading) {
       wx.showLoading({
         title: '拼命加载中...'
       });
     } else {
       wx.hideLoading();
-      wx.showTabBar();
     }
     // userInfo值为-1表示用户没有授权使用个人信息
     let isNotAuth = -1 === userInfo;

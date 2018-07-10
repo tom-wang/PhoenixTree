@@ -70,10 +70,12 @@ var _App = function (_Component) {
         withCredentials: true,
         success: function success(res) {
           store.dispatch((0, _session.setUserInfo)(res.userInfo));
+          store.dispatch((0, _session.setUserInfoLoading)(false));
           console.log(res);
         },
         fail: function fail(res) {
           store.dispatch((0, _session.setUserInfo)(-1));
+          store.dispatch((0, _session.setUserInfoLoading)(false));
           console.log(res);
         }
       });
@@ -138,9 +140,13 @@ var _App = function (_Component) {
           _openid: openId
         }).get().then(function (result) {
           console.log(result);
+          store.dispatch((0, _session.setHasReg)(!!result.data.length));
+          store.dispatch((0, _session.setRegInfoLoading)(false));
           store.dispatch((0, _session.setRegInfo)(_extends({}, result.data[0], {
             openId: openId
           })));
+        }).catch(function () {
+          store.dispatch((0, _session.setRegInfoLoading)(false));
         });
       });
       //调用云DB
