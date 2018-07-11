@@ -30,6 +30,12 @@ var _session = require("../../actions/session.js");
 
 var _index8 = require("../../utils/index.js");
 
+var _const = require("../../utils/const.js");
+
+var Const = _interopRequireWildcard(_const);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -58,6 +64,12 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
     },
     setUserInfo: function setUserInfo(userInfo) {
       dispatch((0, _session.setUserInfo)(userInfo));
+    },
+    setRegInfo: function setRegInfo(regInfo) {
+      dispatch((0, _session.setRegInfo)(regInfo));
+    },
+    setHasReg: function setHasReg(hasReg) {
+      dispatch((0, _session.setHasReg)(hasReg));
     }
   };
 }), _dec(_class = function (_Component) {
@@ -149,7 +161,12 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
       var genderConst = ['', '男', '女'];
       var chineseName = regInfo.chineseName || '';
-      var gender = genderConst[regInfo.gender || userInfo.gender];
+      var gender = void 0;
+      if (regInfo && regInfo.gender) {
+        gender = regInfo.gender;
+      } else {
+        genderConst[regInfo.gender || userInfo.gender];
+      }
       var city = regInfo.city || userInfo.city || '';
       var tel = regInfo.tel || '';
       var authorized = regInfo.authorized || 1;
@@ -223,22 +240,38 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
         insertTime: Date.now(),
         updateTime: Date.now()
       });
-      this.insertOrUpdateDB(data);
+      this.insertOrUpdateDB(data, true);
     }
   }, {
     key: "insertOrUpdateDB",
-    value: function insertOrUpdateDB() {
+    value: function insertOrUpdateDB(data, isInsert) {
+      var _this2 = this;
+
       var db = wx.cloud.database();
       var member_info = db.collection('member_info');
-      return member_info.where({
-        _openid: openId
-      }).get().then(function (result) {
-        console.log(result);
-        store.dispatch(setHasReg(!!result.data.length));
-        store.dispatch(setRegInfo(_extends({}, result.data[0], {
-          openId: openId
-        })));
-      });
+      if (isInsert) {
+        data = _extends({}, data, { state: Const.REG_STATUS_1 });
+        member_info.add({
+          data: data
+        }).then(function (res) {
+          console.log(res);
+          _this2.props.setRegInfo(data);
+          _this2.props.setHasReg(true);
+          (0, _index8.success)('提交成功，等待审核');
+        }).catch(function (res) {
+          (0, _index8.toast)('提交失败');
+        });
+      } else {
+        member_info.doc(data._id).update({
+          data: data
+        }).then(function (res) {
+          console.log(res);
+          _this2.props.setRegInfo(data);
+          (0, _index8.success)('提交成功');
+        }).catch(function (res) {
+          (0, _index8.toast)('提交失败');
+        });
+      }
     }
   }, {
     key: "updateInfo",

@@ -7,8 +7,9 @@ import Avatar from '../../components/avatar/index'
 import InputComponent from '../../components/inputComponent/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import { setUserInfo } from '../../actions/session'
-import { toast, error } from '../../utils/index'
+import { setUserInfo, setRegInfo, setHasReg } from '../../actions/session'
+import { toast, error, success } from '../../utils/index'
+import * as Const from '../../utils/const'
 
 @connect(({ counter, session }) => ({
   counter,
@@ -25,6 +26,12 @@ import { toast, error } from '../../utils/index'
   },
   setUserInfo(userInfo) {
     dispatch(setUserInfo(userInfo))
+  },
+  setRegInfo(regInfo) {
+    dispatch(setRegInfo(regInfo))
+  },
+  setHasReg(hasReg) {
+    dispatch(setHasReg(hasReg))
   }
 }))
 export default class Index extends Component {
@@ -48,7 +55,12 @@ export default class Index extends Component {
     const { userInfo, regInfo } = this.props.session;
     const genderConst = ['', '男', '女'];
     let chineseName  = regInfo.chineseName || '';
-    let gender  = genderConst[regInfo.gender || userInfo.gender];
+    let gender;
+    if(regInfo && regInfo.gender) {
+      gender = regInfo.gender;
+    } else {
+      genderConst[regInfo.gender || userInfo.gender];
+    }
     let city  = regInfo.city || userInfo.city || '';
     let tel  = regInfo.tel || '';
     let authorized = regInfo.authorized || 1;
@@ -117,22 +129,35 @@ export default class Index extends Component {
       insertTime: Date.now(),
       updateTime: Date.now()
     }
-    this.insertOrUpdateDB(data);
+    this.insertOrUpdateDB(data, true);
   }
 
-  insertOrUpdateDB() {
+  insertOrUpdateDB(data, isInsert) {
     const db = wx.cloud.database()
     const member_info = db.collection('member_info')
-    return member_info.where({
-      _openid: openId
-    }).get().then(result => {
-      console.log(result);
-      store.dispatch(setHasReg(!!result.data.length))
-      store.dispatch(setRegInfo({
-        ...result.data[0],
-        openId
-      }))
-    })
+    if(isInsert) {
+      data = {...data, state:Const.REG_STATUS_1}
+      member_info.add({
+        data,
+      }).then(res => {
+        console.log(res)
+        this.props.setRegInfo(data);
+        this.props.setHasReg(true);
+        success('提交成功，等待审核');
+      }).catch(res => {
+        toast('提交失败');
+      });
+    } else {
+      member_info.doc(data._id).update({
+        data,
+      }).then(res => {
+        console.log(res);
+        this.props.setRegInfo(data);
+        success('提交成功')
+      }).catch(res => {
+        toast('提交失败');
+      })
+    }
   }
 
   updateInfo() {

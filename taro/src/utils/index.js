@@ -12,3 +12,10 @@ export function error(title) {
         icon: 'loading'
     })
 }
+
+export function success(title) {
+    wx.showToast({
+        title,
+        icon:'success'
+    })
+}

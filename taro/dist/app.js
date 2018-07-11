@@ -142,9 +142,7 @@ var _App = function (_Component) {
           console.log(result);
           store.dispatch((0, _session.setHasReg)(!!result.data.length));
           store.dispatch((0, _session.setRegInfoLoading)(false));
-          store.dispatch((0, _session.setRegInfo)(_extends({}, result.data[0], {
-            openId: openId
-          })));
+          store.dispatch((0, _session.setRegInfo)(_extends({}, result.data[0])));
         }).catch(function () {
           store.dispatch((0, _session.setRegInfoLoading)(false));
         });

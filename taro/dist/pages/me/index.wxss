@@ -1,34 +1,5 @@
 @import "../../components/avatar/index.wxss";
 @import "../../components/inputComponent/index.wxss";
-.avatar {
-  display: block;
-  width: 120rpx;
-  height: 120rpx; }
-
-.container {
-  width: 100%; }
-
-.input-wrap {
-  background: #fff; }
-
-.avatar-container {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  margin-top: 60rpx; }
-
-.nickname-container {
-  color: #13227a;
-  text-align: center;
-  font-size: 32rpx;
-  margin-top: 10rpx;
-  margin-bottom: 50rpx; }
-
 @charset "UTF-8";
 .btn-container {
   display: -webkit-box;
@@ -185,3 +156,32 @@
 /* hover */
 .btn__hover {
   opacity: 0.9; }
+
+.avatar {
+  display: block;
+  width: 120rpx;
+  height: 120rpx; }
+
+.container {
+  width: 100%; }
+
+.input-wrap {
+  background: #fff; }
+
+.avatar-container {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-top: 60rpx; }
+
+.nickname-container {
+  color: #13227a;
+  text-align: center;
+  font-size: 32rpx;
+  margin-top: 10rpx;
+  margin-bottom: 50rpx; }

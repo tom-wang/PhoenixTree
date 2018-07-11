@@ -114,7 +114,7 @@ export default class Index extends Component {
         <View>
           <Avatar src={userInfo.avatarUrl} />
           { (userInfoList || []).map(item => {
-            item.title = item.nickName;
+            item.title = item.chineseName || item.nickName;
             item.src = item.avatarUrl;
             return <List title={item.title} src={item.src} />
           }) }

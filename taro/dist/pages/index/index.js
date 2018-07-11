@@ -109,7 +109,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
       InputComponent: _index11.default
     };
     _this.$dynamicComponents = {
-      $component_1: function $component_1() {
+      $component_2: function $component_2() {
         var stateName = "loopArray0";
         var nodes = [{
           name: "List",
@@ -243,7 +243,7 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
         )
         */
         var loopArray0 = (userInfoList || []).map(function (item) {
-          item.title = item.nickName;
+          item.title = item.chineseName || item.nickName;
           item.src = item.avatarUrl;
           return _extends({}, item);
         });

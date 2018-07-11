@@ -132,7 +132,6 @@ class App extends Component {
         store.dispatch(setRegInfoLoading(false))
         store.dispatch(setRegInfo({
           ...result.data[0],
-          openId
         }))
       }).catch(() => {
         store.dispatch(setRegInfoLoading(false))
