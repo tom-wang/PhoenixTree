@@ -5,11 +5,12 @@ import './index.scss'
 import Avatar from '../../components/avatar/index'
 import List from '../../components/list/index'
 import LoadMore from '../../components/loadmore/index'
-import InputComponent from '../../components/inputComponent/index'
+import TipsComponent from '../../components/tipsComponent/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { setUserInfo, setUserInfoList } from '../../actions/session'
 import * as Const from '../../utils/const'
+import { error } from '../../utils/index'
 
 @connect(({ counter, session }) => ({
   counter,
@@ -39,6 +40,12 @@ export default class Index extends Component {
   componentWillMount() {
   }
 
+  onPullDownRefresh() {
+    this.fetchUserInfoList().then(() => {
+      wx.stopPullDownRefresh()
+    })
+  }
+
   onShareAppMessage() {
     return {
       title: '同学，有空来喝一杯！'
@@ -58,18 +65,12 @@ export default class Index extends Component {
   }
 
   onGetUserInfo(e) {
-    console.log(e.detail.userInfo)
-    this.props.setUserInfo(e.detail.userInfo)
-  }
-
-  onClick() {
-    //跳转页面，但是不能跳转到tabBar页面
-    //跳转tabBar页面，使用switchTab
-    console.log('lalalal')
-    //Taro.navigateTo({url: '/pages/me/index'})
-    Taro.switchTab({
-      url: '/pages/me/index'
-    })
+    console.log(e)
+    if(e.detail.userInfo) {
+      this.props.setUserInfo(e.detail.userInfo)
+    } else {
+      error('授权失败')
+    }
   }
 
   render () {
@@ -102,8 +103,9 @@ export default class Index extends Component {
     if(isNotAuth) {
       return (
         <View>
-          <View>
-            <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
+          <TipsComponent userInfo={userInfo} msg={["使用该小程序需要得到你的许可", '我们确保不会侵犯你的隐私']} />
+          <View className="btn-container">
+            <Button openType="getUserInfo" className="btn btn__size--large" onGetUserInfo={this.onGetUserInfo.bind(this)}>授权</Button>
           </View>
         </View>
       )
@@ -112,47 +114,10 @@ export default class Index extends Component {
     return (
       <View>
         <View>
-          <Avatar src={userInfo.avatarUrl} />
-          { (userInfoList || []).map(item => {
-            item.title = item.chineseName || item.nickName;
-            item.src = item.avatarUrl;
-            return <List title={item.title} src={item.src} />
-          }) }
+          <List userInfoList={userInfoList} />
           <LoadMore isEnd={true} />
-          <InputComponent />
-          <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
         </View>
-        
       </View>
     )
-    
-    /*
-    return -1 === userInfo ? <View>
-      <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
-    </View> : <View>
-      
-      <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
-    </View>;
-    */
-    /*return (
-      <View className='todo'>
-        <button open-type="getUserInfo">授权</button>
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-        <Button className='add_btn' onClick={this.props.add}>+</Button>
-        <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-        <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-        <View>{this.props.counter.num}</View>
-      </View>
-    )
-    */
   }
 }

@@ -1,24 +1,19 @@
-<import src="../../components/avatar/index.wxml" />
 <import src="../../components/list/index.wxml" />
 <import src="../../components/loadmore/index.wxml" />
-<import src="../../components/inputComponent/index.wxml" />
+<import src="../../components/tipsComponent/index.wxml" />
 <block>
     <view wx:if="{{isLoading}}"></view>
     <view wx:elif="{{isNotAuth}}">
-        <view>
-            <button open-type="getUserInfo" size="mini" bindgetuserinfo="onGetUserInfo"
-            data-event-onGetUserInfo-scope="this" data-component-path="{{$path}}">进入新世界</button>
+        <template is="TipsComponent" data="{{...$$TipsComponent}}"></template>
+        <view class="btn-container">
+            <button open-type="getUserInfo" class="btn btn__size--large" bindgetuserinfo="onGetUserInfo"
+            data-event-onGetUserInfo-scope="this" data-component-path="{{$path}}">授权</button>
         </view>
     </view>
     <view wx:else>
         <view>
-            <template is="Avatar" data="{{...$$Avatar}}"></template>
-            <template is="List" data="{{...item}}" wx:for="{{loopArray0}}"
-            wx:for-item="item"></template>
+            <template is="List" data="{{...$$List}}"></template>
             <template is="LoadMore" data="{{...$$LoadMore}}"></template>
-            <template is="InputComponent" data="{{...$$InputComponent}}"></template>
-            <button size="mini" bindtap="onClick" data-event-onClick-scope="this"
-            data-component-path="{{$path}}">打开新页面</button>
         </view>
     </view>
 </block>

@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _dec, _class;
@@ -28,7 +26,7 @@ var _index8 = require("../../components/loadmore/index.js");
 
 var _index9 = _interopRequireDefault(_index8);
 
-var _index10 = require("../../components/inputComponent/index.js");
+var _index10 = require("../../components/tipsComponent/index.js");
 
 var _index11 = _interopRequireDefault(_index10);
 
@@ -39,6 +37,8 @@ var _session = require("../../actions/session.js");
 var _const = require("../../utils/const.js");
 
 var Const = _interopRequireWildcard(_const);
+
+var _index12 = require("../../utils/index.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -83,12 +83,19 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
     var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
 
-    _this.$usedState = ["userInfo", "loopArray0", "isLoading", "isNotAuth", "userInfoList", "$$Avatar", "$$LoadMore", "$$InputComponent"];
+    _this.$usedState = ["userInfo", "userInfoList", "isLoading", "isNotAuth", "$$TipsComponent", "$$List", "$$LoadMore"];
     _this.$props = {
-      Avatar: function Avatar() {
+      TipsComponent: function TipsComponent() {
         return {
-          $name: "Avatar",
-          src: (0, _index.internal_safe_get)(this.state, "userInfo.avatarUrl")
+          $name: "TipsComponent",
+          userInfo: this.state.userInfo,
+          msg: ["使用该小程序需要得到你的许可", '我们确保不会侵犯你的隐私']
+        };
+      },
+      List: function List() {
+        return {
+          $name: "List",
+          userInfoList: this.state.userInfoList
         };
       },
       LoadMore: function LoadMore() {
@@ -96,38 +103,12 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
           $name: "LoadMore",
           isEnd: true
         };
-      },
-      InputComponent: function InputComponent() {
-        return {
-          $name: "InputComponent"
-        };
       }
     };
     _this.$components = {
-      Avatar: _index5.default,
-      LoadMore: _index9.default,
-      InputComponent: _index11.default
-    };
-    _this.$dynamicComponents = {
-      $component_2: function $component_2() {
-        var stateName = "loopArray0";
-        var nodes = [{
-          name: "List",
-          path: _index7.default,
-          subscript: "",
-
-          args: function args(__item, index) {
-            return {
-              title: __item.title,
-              src: __item.src
-            };
-          }
-        }];
-        return {
-          stateName: stateName,
-          loopComponents: (0, _index.internal_dynamic_recursive)(_this, nodes, (0, _index.internal_safe_get)(_this.state, stateName), stateName)
-        };
-      }
+      TipsComponent: _index11.default,
+      List: _index7.default,
+      LoadMore: _index9.default
     };
 
     _this.state = _this._createData();
@@ -137,6 +118,13 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
   _createClass(Index, [{
     key: "componentWillMount",
     value: function componentWillMount() {}
+  }, {
+    key: "onPullDownRefresh",
+    value: function onPullDownRefresh() {
+      this.fetchUserInfoList().then(function () {
+        wx.stopPullDownRefresh();
+      });
+    }
   }, {
     key: "onShareAppMessage",
     value: function onShareAppMessage() {
@@ -162,19 +150,12 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
   }, {
     key: "__event_onGetUserInfo",
     value: function __event_onGetUserInfo(e) {
-      console.log(e.detail.userInfo);
-      this.props.setUserInfo(e.detail.userInfo);
-    }
-  }, {
-    key: "__event_onClick",
-    value: function __event_onClick() {
-      //跳转页面，但是不能跳转到tabBar页面
-      //跳转tabBar页面，使用switchTab
-      console.log('lalalal');
-      //Taro.navigateTo({url: '/pages/me/index'})
-      _index2.default.switchTab({
-        url: '/pages/me/index'
-      });
+      console.log(e);
+      if (e.detail.userInfo) {
+        this.props.setUserInfo(e.detail.userInfo);
+      } else {
+        (0, _index12.error)('授权失败');
+      }
     }
   }, {
     key: "_createData",
@@ -214,45 +195,11 @@ var Index = (_dec = (0, _index3.connect)(function (_ref) {
 
         if (isNotAuth) {}
 
-        /*
-        return -1 === userInfo ? <View>
-          <Button openType="getUserInfo" size="mini" onGetUserInfo={this.onGetUserInfo.bind(this)}>进入新世界</Button>
-        </View> : <View>
-          
-          <Button size="mini" onClick={this.onClick.bind(this)}>打开新页面</Button>
-        </View>;
-        */
-        /*return (
-          <View className='todo'>
-            <button open-type="getUserInfo">授权</button>
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Avatar count="7" src="https://s11.mogucdn.com/p2/170413/upload_86dkh4e886991g9lji7a6g5c530ji_400x400.jpg" />
-            <Button className='add_btn' onClick={this.props.add}>+</Button>
-            <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-            <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-            <View>{this.props.counter.num}</View>
-          </View>
-        )
-        */
-        var loopArray0 = (userInfoList || []).map(function (item) {
-          item.title = item.chineseName || item.nickName;
-          item.src = item.avatarUrl;
-          return _extends({}, item);
-        });
         Object.assign(this.__state, {
           userInfo: userInfo,
-          loopArray0: loopArray0,
+          userInfoList: userInfoList,
           isLoading: isLoading,
-          isNotAuth: isNotAuth,
-          userInfoList: userInfoList
+          isNotAuth: isNotAuth
         });
         this.__state.__data = Object.assign({}, this.__state);
         return this.__state;

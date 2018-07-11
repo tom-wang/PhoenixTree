@@ -5,45 +5,51 @@ import './index.scss'
 
 export default class List extends Component {
     static defaultProps = {
-        title: '',
         detail: '',
         desc: '',
         icon: '',
         iconColor: '#ff5077',
-        src: '',
         dot: false,
         dotColor: '#f5123e',
         arrow: true,
         mode: 'normal'
     }
 
-    onClick(event) {
+    onClick(item, event) {
         var detail = event.detail;
         var option = {};
-        console.log(detail);
+        console.log(event, item);
+        //呼叫电话
+        wx.makePhoneCall({
+            phoneNumber: item.tel //仅为示例，并非真实的电话号码
+        })
     }
 
     render() {
-        const { mode, src, title, detail, dot, dotColor, desc } = this.props;
-        let isValidSrc = !!src;
+        const { mode, detail, dot, dotColor, desc, userInfoList } = this.props;
         let isValidDetail = !!detail;
         let isValidDot = !!dot;
         let isValidDesc = !!desc;
         return (
-        <View className={`list__body list__${mode}`} onClick={this.onClick.bind(this)}>
-            { isValidSrc && <Image class="list__image" src={src} mode="aspectFill"></Image> }
-            <View className="list__title">
-                <View className="list__title--main">{title}</View>
-                { isValidDetail && <View class="list__title--sub">{detail}</View> }
-            </View>
-            { isValidDot && <View style={`background: ${dotColor}`} className="list__desc--dot"></View> }
-            { isValidDesc && <View className="list__desc--text">{desc}</View> }
-            <View class="icon icon--more" style="font-size:30rpx; color:#c2c2c2"></View>
+        <View>
+            { (userInfoList || []).map(item => {
+                let title = item.chineseName || item.nickName;
+                let src = item.avatarUrl;
+                let isValidSrc = !!src;
+                return (
+                    <View className={`list__body list__${mode}`} onClick={this.onClick.bind(this, item)}>
+                        { isValidSrc && <Image class="list__image" src={src} mode="aspectFill"></Image> }
+                        <View className="list__title">
+                            <View className="list__title--main">{title}</View>
+                            { isValidDetail && <View class="list__title--sub">{detail}</View> }
+                        </View>
+                        { isValidDot && <View style={`background: ${dotColor}`} className="list__desc--dot"></View> }
+                        { isValidDesc && <View className="list__desc--text">{desc}</View> }
+                        <View class="icon icon--more" style="font-size:30rpx; color:#c2c2c2"></View>
+                    </View>
+                )
+            }) }
         </View>
         );
     }
 }
-
-//<wxc-icon wx:if="{{!src && icon}}" class="list__icon" size="38" type="{{icon}}" color="{{iconColor}}" _pid="{{_pid}}"></wxc-icon>
-//<wxc-icon wx:if="{{arrow}}" class="list__desc--arrow" type="arrow-right" size="30" color="#c2c2c2" _pid="{{_pid}}"></wxc-icon>
-//<slot wx:if="{{!desc}}"></slot>
