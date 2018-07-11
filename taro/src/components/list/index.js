@@ -26,7 +26,7 @@ export default class List extends Component {
     }
 
     render() {
-        const { mode, detail, dot, dotColor, desc, userInfoList } = this.props;
+        const { mode, detail, dot, dotColor, desc, userInfoList, regInfo } = this.props;
         let isValidDetail = !!detail;
         let isValidDot = !!dot;
         let isValidDesc = !!desc;
@@ -34,13 +34,20 @@ export default class List extends Component {
         <View>
             { (userInfoList || []).map(item => {
                 let title = item.chineseName || item.nickName;
+                let isSelf = false;
+                if(item._openid == regInfo._openid) {
+                    isSelf = true;
+                }
                 let src = item.avatarUrl;
                 let isValidSrc = !!src;
                 return (
                     <View className={`list__body list__${mode}`} onClick={this.onClick.bind(this, item)}>
                         { isValidSrc && <Image class="list__image" src={src} mode="aspectFill"></Image> }
                         <View className="list__title">
-                            <View className="list__title--main">{title}</View>
+                            <View className="list__title--main">
+                            {title}
+                            { isSelf && <span class="self-tag">(自己)</span> }
+                            </View>
                             { isValidDetail && <View class="list__title--sub">{detail}</View> }
                         </View>
                         { isValidDot && <View style={`background: ${dotColor}`} className="list__desc--dot"></View> }

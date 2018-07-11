@@ -14,9 +14,8 @@
             <view class="input">
                 <view class="input__combine input__normal">
                     <view class="input__label">公开我的信息</view>
-                    <switch type="switch" checked="{{authorized ? true : false}}"
-                    color="#13227a" bindchange="onChange" data-event-onChange-scope="this"
-                    data-component-path="{{$path}}"></switch>
+                    <switch type="switch" checked="{{authorizedBool}}" color="#13227a"
+                    bindchange="onChange" data-event-onChange-scope="this" data-component-path="{{$path}}"></switch>
                 </view>
             </view>
         </view>

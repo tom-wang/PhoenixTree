@@ -18,8 +18,10 @@ export default class Avatar extends Component {
     render() {
         let {src, mold} = this.props;
         let isValidSrc = !!src;
-        return <View className="avatar" onClick={this.onClick.bind(this)}>
-                { isValidSrc && <view class={`avatar__pic avatar__mold--${mold}`} style={`background-image: url(${src}); background-repeat: no-repeat; background-position: center center; background-size: cover`}></view> }
-            </View>;
+        return (
+        <View className="avatar" onClick={this.onClick.bind(this)}>
+            { isValidSrc && <view class={`avatar__pic avatar__mold--${mold}`} style={`background-image: url(${src}); background-repeat: no-repeat; background-position: center center; background-size: cover`}></view> }
+        </View>
+        );
     }
 }

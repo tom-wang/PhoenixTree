@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
 import configStore from './store'
 import Index from './pages/index'
-import { setCode, setUserInfo, setRegInfo, setHasReg, setRegInfoLoading, setUserInfoLoading } from './actions/session'
+import { setCode, setUserInfo, setRegInfo, setHasReg, setRegInfoLoading, setUserInfoLoading, loadRegInfo } from './actions/session'
 
 import './app.scss'
 
@@ -37,12 +37,20 @@ class App extends Component {
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black',
-      enablePullDownRefresh: true
+      //enablePullDownRefresh: true
+    },
+    /*
+    static: {
+      file1: './static/leaf.png'
     }
+    */
   }
 
   //会编译成onLaunch
-  componentWillMount() {
+  //componentWillMount() {
+  // 将编译成onShow
+  componentDidShow() {
+    console.log('onLaunch', arguments);
     this.login().then(() => {
       wx.cloud.init();
       this.getCurrentUserInfo();
@@ -110,6 +118,8 @@ class App extends Component {
   }
 
   getUserRegInfo() {
+    store.dispatch(loadRegInfo());
+    /*
     //调用云函数
     return wx.cloud.callFunction({
       // 需调用的云函数名
@@ -139,6 +149,7 @@ class App extends Component {
       })
     });
     //调用云DB
+    */
     
     /*
     添加
@@ -155,7 +166,7 @@ class App extends Component {
     */
   }
 
-  componentDidShow () {}
+  //componentDidShow () {}
 
   componentDidHide () {}
 

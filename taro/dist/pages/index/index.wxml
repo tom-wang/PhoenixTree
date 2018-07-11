@@ -6,11 +6,26 @@
     <view wx:elif="{{isNotAuth}}">
         <template is="TipsComponent" data="{{...$$TipsComponent}}"></template>
         <view class="btn-container">
-            <button open-type="getUserInfo" class="btn btn__size--large" bindgetuserinfo="onGetUserInfo"
-            data-event-onGetUserInfo-scope="this" data-component-path="{{$path}}">授权</button>
+            <button open-type="getUserInfo" lang="zh_CN" class="btn btn__size--large"
+            bindgetuserinfo="onGetUserInfo" data-event-onGetUserInfo-scope="this" data-component-path="{{$path}}">授权</button>
+        </view>
+    </view>
+    <view wx:elif="{{!hasReg}}">
+        <template is="TipsComponent" data="{{...$$TipsComponent_1}}"></template>
+        <view class="btn-container">
+            <button class="btn btn__size--large" bindtap="onClick" data-event-onClick-scope="this"
+            data-component-path="{{$path}}">填写</button>
+        </view>
+    </view>
+    <view wx:elif="{{isNotAuthorized}}">
+        <template is="TipsComponent" data="{{...$$TipsComponent_2}}"></template>
+        <view class="btn-container">
+            <button class="btn btn__size--large" bindtap="onClick" data-event-onClick-scope="this"
+            data-component-path="{{$path}}">修改资料</button>
         </view>
     </view>
     <view wx:else>
+        <template is="TipsComponent" data="{{...$$TipsComponent_3}}"></template>
         <view>
             <template is="List" data="{{...$$List}}"></template>
             <template is="LoadMore" data="{{...$$LoadMore}}"></template>

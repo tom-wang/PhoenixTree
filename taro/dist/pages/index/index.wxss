@@ -1,7 +1,1 @@
-@import "../../components/list/index.wxss";
-@import "../../components/loadmore/index.wxss";
-@import "../../components/tipsComponent/index.wxss";
-.avatar {
-  display: block;
-  width: 120rpx;
-  height: 120rpx; }
+@import "../../components/list/index.wxss";@import "../../components/loadmore/index.wxss";@import "../../components/tipsComponent/index.wxss";.avatar{display:block;width:120rpx;height:120rpx}

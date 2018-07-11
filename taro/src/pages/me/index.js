@@ -52,6 +52,10 @@ export default class Index extends Component {
   }
 
   componentWillMount() {
+    this.getFormData();
+  }
+
+  getFormData() {
     const { userInfo, regInfo } = this.props.session;
     const genderConst = ['', '男', '女'];
     let chineseName  = regInfo.chineseName || '';
@@ -59,18 +63,19 @@ export default class Index extends Component {
     if(regInfo && regInfo.gender) {
       gender = regInfo.gender;
     } else {
-      genderConst[regInfo.gender || userInfo.gender];
+      gender = genderConst[userInfo.gender] || genderConst[regInfo.gender];
     }
     let city  = regInfo.city || userInfo.city || '';
     let tel  = regInfo.tel || '';
-    let authorized = regInfo.authorized || 1;
-    this.setState({
+    let authorized = regInfo ? regInfo.authorized : 1;
+    this.state = {
       chineseName,
       gender,
       city,
       tel,
       authorized
-    })
+    };
+    return this.state;
   }
 
   onSubmit() {
@@ -118,6 +123,7 @@ export default class Index extends Component {
       tel,
       authorized
     } = this.state;
+    //this.setState(this.state);
     let { regInfo, userInfo } = this.props.session;
     let data = {
       ...userInfo,
@@ -168,6 +174,7 @@ export default class Index extends Component {
       tel,
       authorized
     } = this.state;
+    //this.setState(this.state);
     let { regInfo, userInfo } = this.props.session;
     let data = {
       ...regInfo, 
@@ -198,8 +205,9 @@ export default class Index extends Component {
   }
 
   render () {
-    const { userInfo } = this.props.session;
-    const { chineseName, gender, city, tel, authorized } = this.state;
+    const { userInfo, regInfo } = this.props.session;
+    const { chineseName, gender, city, tel, authorized } = this.getFormData();
+    const authorizedBool = !!authorized;
     return (
       <View className="container">
         <View className="avatar-container">
@@ -218,7 +226,7 @@ export default class Index extends Component {
           <View className="input">
             <View className="input__combine input__normal">
               <View className="input__label">公开我的信息</View>
-              <Switch type="switch" checked={authorized?true:false} color="#13227a" onChange={this.onChange.bind(this)}></Switch>
+              <Switch type="switch" checked={authorizedBool} color="#13227a" onChange={this.onChange.bind(this)}></Switch>
             </View>
           </View>
         </View>

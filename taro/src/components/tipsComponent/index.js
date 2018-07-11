@@ -11,6 +11,9 @@ export default class TipsComponent extends Component {
   
     render() {
       const { msg, userInfo } = this.props;
+      if(userInfo && userInfo.nickName) {
+          msg.unshift(userInfo.nickName);
+      }
       return (
         <View className="container">
             <View className="avatar-container">
