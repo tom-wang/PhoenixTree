@@ -7,7 +7,7 @@ import Avatar from '../../components/avatar/index'
 import InputComponent from '../../components/inputComponent/index'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import { setUserInfo, setRegInfo, setHasReg } from '../../actions/session'
+import { setUserInfo, setRegInfo, setHasReg, setIndexNeedReload } from '../../actions/session'
 import { toast, error, success } from '../../utils/index'
 import * as Const from '../../utils/const'
 
@@ -32,6 +32,9 @@ import * as Const from '../../utils/const'
   },
   setHasReg(hasReg) {
     dispatch(setHasReg(hasReg))
+  },
+  setIndexNeedReload(val) {
+    dispatch(setIndexNeedReload(val))
   }
 }))
 export default class Index extends Component {
@@ -131,7 +134,7 @@ export default class Index extends Component {
       gender,
       city,
       tel,
-      authorized,
+      authorized: 1,
       insertTime: Date.now(),
       updateTime: Date.now()
     }
@@ -139,6 +142,8 @@ export default class Index extends Component {
   }
 
   insertOrUpdateDB(data, isInsert) {
+    //设置标记，表示首页需要重载
+    this.props.setIndexNeedReload(true);
     const db = wx.cloud.database()
     const member_info = db.collection('member_info')
     if(isInsert) {
@@ -183,7 +188,7 @@ export default class Index extends Component {
       gender,
       city,
       tel,
-      authorized,
+      authorized: 1,
       updateTime: Date.now()
     }
     this.insertOrUpdateDB(data);
@@ -223,12 +228,6 @@ export default class Index extends Component {
           src="https://s10.mogucdn.com/mlcdn/c45406/171025_7abllhkc011ka5kici7532af6202g_28x40.png"
           maxlength="11"
           ></InputComponent>
-          <View className="input">
-            <View className="input__combine input__normal">
-              <View className="input__label">公开我的信息</View>
-              <Switch type="switch" checked={authorizedBool} color="#13227a" onChange={this.onChange.bind(this)}></Switch>
-            </View>
-          </View>
         </View>
         <View className="btn-container">
           <Button className="btn btn__size--large" onClick={this.onSubmit.bind(this)}>提交</Button>
@@ -237,3 +236,12 @@ export default class Index extends Component {
     )
   }
 }
+
+/*
+<View className="input">
+<View className="input__combine input__normal">
+  <View className="input__label">公开我的信息</View>
+  <Switch type="switch" checked={authorizedBool} color="#13227a" onChange={this.onChange.bind(this)}></Switch>
+</View>
+</View>
+*/

@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
 import configStore from './store'
 import Index from './pages/index'
-import { setCode, setUserInfo, setRegInfo, setHasReg, setRegInfoLoading, setUserInfoLoading, loadRegInfo } from './actions/session'
+import { setCode, setUserInfo, setRegInfo, setHasReg, setRegInfoLoading, setUserInfoLoading, loadRegInfo, setIndexNeedReload } from './actions/session'
 
 import './app.scss'
 
@@ -59,6 +59,11 @@ class App extends Component {
       console.log(arguments);
       console.log('catch');
     });
+  }
+
+  componentDidHide() {
+    //当应用程序隐藏的时候，打开需要重新load
+    store.dispatch(setIndexNeedReload(true));
   }
 
   // getUserInfo需要授权
@@ -168,7 +173,7 @@ class App extends Component {
 
   //componentDidShow () {}
 
-  componentDidHide () {}
+  //componentDidHide () {}
 
   componentCatchError () {}
 

@@ -5,7 +5,7 @@
 .list__body {
     display: flex;
     align-items: center;
-    min-height: 90rpx;
+    min-height: 100rpx;
     line-height: 1.4;
     padding: 20rpx 30rpx 20rpx 0;
     margin-left: 30rpx;
@@ -18,9 +18,9 @@
     border: none
 }
 .list__image {
-    width: 38rpx;
-    height: 38rpx;
-    margin-right: 30rpx
+    margin-right: 30rpx;
+    width: 70rpx;
+    height: 70px;
 }
 .list__icon {
     margin-right: 30rpx

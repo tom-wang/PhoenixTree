@@ -1,4 +1,4 @@
-import { SET_CODE, SET_USERINFO, SET_REGINFO, SET_USERINFOLIST, SET_HASREG, SET_USERINFOLOADING, SET_REGINFOLOADING } from '../constants/session'
+import { SET_CODE, SET_USERINFO, SET_REGINFO, SET_USERINFOLIST, SET_HASREG, SET_USERINFOLOADING, SET_REGINFOLOADING, SET_INDEXNEEDRELOAD } from '../constants/session'
 
 const INITIAL_STATE = {
   code: '',
@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   regInfo: false,
   userInfoList: false,
   hasReg: false, //标识用户是否注册
+  indexNeedReload: false, //首页是否需要重新加载
 }
 
 export default function session (state = INITIAL_STATE, action) {
@@ -46,6 +47,11 @@ export default function session (state = INITIAL_STATE, action) {
       return {
         ...state,
         userInfoLoading: action.payload
+      }
+    case SET_INDEXNEEDRELOAD:
+      return {
+        ...state,
+        indexNeedReload: action.payload
       }
     default:
        return state
